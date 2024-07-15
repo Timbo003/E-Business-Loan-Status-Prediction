@@ -68,6 +68,30 @@ library(randomForest)
 ##     combine
 ```
 
+``` r
+library(pROC)
+```
+
+```
+## Type 'citation("pROC")' for a citation.
+```
+
+```
+## 
+## Attache Paket: 'pROC'
+```
+
+```
+## Die folgenden Objekte sind maskiert von 'package:stats':
+## 
+##     cov, smooth, var
+```
+
+``` r
+library(class)
+library(rpart)
+```
+
 ------------------------------------------------------------------------
 
 # Load the data
@@ -131,7 +155,7 @@ rawData <- rawData %>% mutate(
   Gender = factor(Gender),
   Dependents = factor(Dependents),
   Property_Area = factor(Property_Area),
-  Loan_Status = factor(Loan_Status)
+  Loan_Status = factor(ifelse(Loan_Status == "Y", TRUE, FALSE))
 )
 
 print(rawData)
@@ -157,12 +181,11 @@ print(rawData)
 ## #   Loan_Status <fct>
 ```
 
+
 ``` r
 # drop all missing values just for testing TODO
 rawData <- na.omit(rawData)
 ```
-
-
 
 
 ``` r
@@ -180,6 +203,12 @@ print(null_counts)
 ##                 0                 0                 0                 0
 ```
 
+
+``` r
+# save the data as a csv #TODO
+write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
+```
+
 ------------------------------------------------------------------------
 
 # Initial Data sighting
@@ -189,12 +218,12 @@ print(null_counts)
 # Plot 1: Distribution of Loan Status with customized colors
 ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
   geom_bar(color = "black") +
-  scale_fill_manual(values = c("Y" = "#90EE90", "N" = "#FFB6C1")) +
+  scale_fill_manual(values = c("TRUE" = "#90EE90", "FALSE" = "#FFB6C1")) +
   theme_minimal() +
   ggtitle("Distribution of Loan Status")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 ``` r
@@ -206,7 +235,7 @@ ggplot(rawData, aes(x = Gender, fill = Gender)) +
   ggtitle("Distribution of Gender")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 
 ``` r
@@ -222,7 +251,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = Average_LoanAmount, fill = Pr
   labs(y = "Average Loan Amount", fill = "Property Area")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 
 ``` r
@@ -234,7 +263,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
   labs(fill = "Education")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 
 ``` r
@@ -246,10 +275,10 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
   labs(fill = "Self Employed")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
-
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 # Split Data into Training and Testing Sets
+
 
 ``` r
 set.seed(123)  # For reproducibility
@@ -262,68 +291,77 @@ trainData <- rawData[ trainIndex,]
 testData  <- rawData[-trainIndex,]
 ```
 
-# Train the Random Forest Model
+# Scale the Data
+
+
+``` r
+# Identify numeric columns
+numeric_cols <- sapply(trainData, is.numeric)
+
+# Apply scaling and centering to numeric columns
+preProc <- preProcess(trainData[, numeric_cols], method = c("center", "scale"))
+trainData[, numeric_cols] <- predict(preProc, trainData[, numeric_cols])
+testData[, numeric_cols] <- predict(preProc, testData[, numeric_cols])
+
+print(head(trainData))
+```
+
+```
+## # A tibble: 6 × 12
+##   Gender Married Dependents Education Self_Employed ApplicantIncome
+##   <fct>  <fct>   <fct>      <fct>     <fct>                   <dbl>
+## 1 Male   TRUE    0          TRUE      TRUE                   -0.400
+## 2 Male   TRUE    0          FALSE     FALSE                  -0.838
+## 3 Male   TRUE    2          TRUE      FALSE                  -0.269
+## 4 Male   FALSE   0          TRUE      FALSE                  -1.15 
+## 5 Male   TRUE    2          TRUE      FALSE                  -1.52 
+## 6 Male   FALSE   0          TRUE      FALSE                   0.880
+## # ℹ 6 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
+## #   Loan_Amount_Term <dbl>, Credit_History <dbl>, Property_Area <fct>,
+## #   Loan_Status <fct>
+```
+
+``` r
+print(head(testData))
+```
+
+```
+## # A tibble: 6 × 12
+##   Gender Married Dependents Education Self_Employed ApplicantIncome
+##   <fct>  <fct>   <fct>      <fct>     <fct>                   <dbl>
+## 1 Male   TRUE    1          TRUE      FALSE                  0.639 
+## 2 Male   TRUE    0          FALSE     FALSE                 -0.674 
+## 3 Male   FALSE   0          TRUE      FALSE                  1.57  
+## 4 Male   FALSE   0          FALSE     FALSE                  0.0909
+## 5 Male   FALSE   0          TRUE      FALSE                 -1.19  
+## 6 Male   TRUE    1          TRUE      FALSE                  1.34  
+## # ℹ 6 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
+## #   Loan_Amount_Term <dbl>, Credit_History <dbl>, Property_Area <fct>,
+## #   Loan_Status <fct>
+```
+
+# Train and Evaluate the Random Forest Model
+
 
 ``` r
 # Train the model
 rf_model <- randomForest(Loan_Status ~ ., data = trainData, importance = TRUE, ntree = 500)
 
-# Print the model
-print(rf_model)
-```
-
-```
-## 
-## Call:
-##  randomForest(formula = Loan_Status ~ ., data = trainData, importance = TRUE,      ntree = 500) 
-##                Type of random forest: classification
-##                      Number of trees: 500
-## No. of variables tried at each split: 3
-## 
-##         OOB estimate of  error rate: 17.74%
-## Confusion matrix:
-##    N   Y class.error
-## N 36  36  0.50000000
-## Y  8 168  0.04545455
-```
-
-``` r
-# Check the importance of variables
-importance(rf_model)
-```
-
-```
-##                            N          Y MeanDecreaseAccuracy MeanDecreaseGini
-## Gender             0.8473761  0.4201563           0.93583738         2.014488
-## Married           -3.4872475  3.2921125           0.76407064         2.760396
-## Dependents        -2.5633966 -1.1043048          -2.37864083         4.342131
-## Education         -0.4572081 -2.8615318          -2.47574251         2.199233
-## Self_Employed     -3.4511021  2.3250787           0.08867498         1.297358
-## ApplicantIncome   -1.2311767  8.7845691           7.45249029        18.305400
-## CoapplicantIncome  5.2533346  7.5959685           9.11948000        11.287346
-## LoanAmount         1.1711290  1.2615054           1.67518193        15.793777
-## Loan_Amount_Term   1.5666382  4.9600125           4.76955339         5.099701
-## Credit_History    46.7925910 45.2840544          51.68754084        26.601415
-## Property_Area      0.4185772  0.1613085           0.37490630         5.520060
-```
-
-# Evaluate the Model
-
-``` r
 # Predict on the test data
-predictions <- predict(rf_model, newdata = testData)
+rf_predictions <- predict(rf_model, newdata = testData)
 
 # Confusion matrix
-confusionMatrix(predictions, testData$Loan_Status)
+rf_conf_matrix <- confusionMatrix(rf_predictions, testData$Loan_Status)
+print(rf_conf_matrix)
 ```
 
 ```
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
-## Prediction  N  Y
-##          N 10  1
-##          Y  7 42
+## Prediction FALSE TRUE
+##      FALSE    10    1
+##      TRUE      7   42
 ##                                           
 ##                Accuracy : 0.8667          
 ##                  95% CI : (0.7541, 0.9406)
@@ -343,36 +381,17 @@ confusionMatrix(predictions, testData$Loan_Status)
 ##    Detection Prevalence : 0.1833          
 ##       Balanced Accuracy : 0.7825          
 ##                                           
-##        'Positive' Class : N               
+##        'Positive' Class : FALSE           
 ## 
 ```
 
 ``` r
 # Plot ROC curve and calculate AUC
-library(pROC)
+rf_roc_obj <- roc(testData$Loan_Status, as.numeric(rf_predictions))
 ```
 
 ```
-## Type 'citation("pROC")' for a citation.
-```
-
-```
-## 
-## Attache Paket: 'pROC'
-```
-
-```
-## Die folgenden Objekte sind maskiert von 'package:stats':
-## 
-##     cov, smooth, var
-```
-
-``` r
-roc_obj <- roc(testData$Loan_Status, as.numeric(predictions))
-```
-
-```
-## Setting levels: control = N, case = Y
+## Setting levels: control = FALSE, case = TRUE
 ```
 
 ```
@@ -380,24 +399,230 @@ roc_obj <- roc(testData$Loan_Status, as.numeric(predictions))
 ```
 
 ``` r
-auc(roc_obj)
-```
-
-```
-## Area under the curve: 0.7825
-```
-
-``` r
-plot(roc_obj, main="ROC Curve for Random Forest Model")
-```
-
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
-
-# Visualize Important Variables
-
-``` r
-# Plot the importance of variables
-varImpPlot(rf_model, main="Variable Importance in Random Forest Model")
+rf_auc <- auc(rf_roc_obj)
+plot(rf_roc_obj, main="ROC Curve for Random Forest Model")
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+rf_metrics <- list(Accuracy = rf_conf_matrix$overall['Accuracy'], AUC = rf_auc)
+print(rf_metrics)
+```
+
+```
+## $Accuracy
+##  Accuracy 
+## 0.8666667 
+## 
+## $AUC
+## Area under the curve: 0.7825
+```
+
+# Train and Evaluate the KNN Model
+
+
+``` r
+# Ensure that KNN uses numeric features only
+train_knn <- trainData[, numeric_cols]
+test_knn <- testData[, numeric_cols]
+
+# Train the KNN model (k = 5)
+knn_predictions <- knn(train = train_knn, test = test_knn, cl = trainData$Loan_Status, k = 5)
+
+# Confusion matrix
+knn_conf_matrix <- confusionMatrix(knn_predictions, testData$Loan_Status)
+print(knn_conf_matrix)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction FALSE TRUE
+##      FALSE    10    1
+##      TRUE      7   42
+##                                           
+##                Accuracy : 0.8667          
+##                  95% CI : (0.7541, 0.9406)
+##     No Information Rate : 0.7167          
+##     P-Value [Acc > NIR] : 0.004937        
+##                                           
+##                   Kappa : 0.6325          
+##                                           
+##  Mcnemar's Test P-Value : 0.077100        
+##                                           
+##             Sensitivity : 0.5882          
+##             Specificity : 0.9767          
+##          Pos Pred Value : 0.9091          
+##          Neg Pred Value : 0.8571          
+##              Prevalence : 0.2833          
+##          Detection Rate : 0.1667          
+##    Detection Prevalence : 0.1833          
+##       Balanced Accuracy : 0.7825          
+##                                           
+##        'Positive' Class : FALSE           
+## 
+```
+
+``` r
+# Plot ROC curve and calculate AUC
+knn_roc_obj <- roc(testData$Loan_Status, as.numeric(knn_predictions))
+```
+
+```
+## Setting levels: control = FALSE, case = TRUE
+```
+
+```
+## Setting direction: controls < cases
+```
+
+``` r
+knn_auc <- auc(knn_roc_obj)
+plot(knn_roc_obj, main="ROC Curve for KNN Model")
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+knn_metrics <- list(Accuracy = knn_conf_matrix$overall['Accuracy'], AUC = knn_auc)
+print(knn_metrics)
+```
+
+```
+## $Accuracy
+##  Accuracy 
+## 0.8666667 
+## 
+## $AUC
+## Area under the curve: 0.7825
+```
+
+# Train and Evaluate the Decision Tree Model
+
+
+``` r
+# Train the decision tree model
+dt_model <- rpart(Loan_Status ~ ., data = trainData, method = "class")
+
+# Predict on the test data
+dt_predictions <- predict(dt_model, newdata = testData, type = "class")
+
+# Confusion matrix
+dt_conf_matrix <- confusionMatrix(dt_predictions, testData$Loan_Status)
+print(dt_conf_matrix)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction FALSE TRUE
+##      FALSE     9    1
+##      TRUE      8   42
+##                                          
+##                Accuracy : 0.85           
+##                  95% CI : (0.7343, 0.929)
+##     No Information Rate : 0.7167         
+##     P-Value [Acc > NIR] : 0.01221        
+##                                          
+##                   Kappa : 0.5781         
+##                                          
+##  Mcnemar's Test P-Value : 0.04550        
+##                                          
+##             Sensitivity : 0.5294         
+##             Specificity : 0.9767         
+##          Pos Pred Value : 0.9000         
+##          Neg Pred Value : 0.8400         
+##              Prevalence : 0.2833         
+##          Detection Rate : 0.1500         
+##    Detection Prevalence : 0.1667         
+##       Balanced Accuracy : 0.7531         
+##                                          
+##        'Positive' Class : FALSE          
+## 
+```
+
+``` r
+# Plot ROC curve and calculate AUC
+dt_roc_obj <- roc(testData$Loan_Status, as.numeric(dt_predictions))
+```
+
+```
+## Setting levels: control = FALSE, case = TRUE
+```
+
+```
+## Setting direction: controls < cases
+```
+
+``` r
+dt_auc <- auc(dt_roc_obj)
+plot(dt_roc_obj, main="ROC Curve for Decision Tree Model")
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+dt_metrics <- list(Accuracy = dt_conf_matrix$overall['Accuracy'], AUC = dt_auc)
+print(dt_metrics)
+```
+
+```
+## $Accuracy
+## Accuracy 
+##     0.85 
+## 
+## $AUC
+## Area under the curve: 0.7531
+```
+
+# Compare Models
+
+
+``` r
+# Combine metrics into a data frame
+model_comparison <- data.frame(
+  Model = c("Random Forest", "KNN", "Decision Tree"),
+  Accuracy = c(rf_metrics$Accuracy, knn_metrics$Accuracy, dt_metrics$Accuracy),
+  AUC = c(rf_metrics$AUC, knn_metrics$AUC, dt_metrics$AUC)
+)
+
+print(model_comparison)
+```
+
+```
+##           Model  Accuracy       AUC
+## 1 Random Forest 0.8666667 0.7824897
+## 2           KNN 0.8666667 0.7824897
+## 3 Decision Tree 0.8500000 0.7530780
+```
+
+``` r
+# Identify the best model
+best_model_name <- model_comparison$Model[which.max(model_comparison$AUC)]
+cat("Best model based on AUC is:", best_model_name, "\n")
+```
+
+```
+## Best model based on AUC is: Random Forest
+```
+
+``` r
+best_model <- switch(best_model_name,
+                     "Random Forest" = rf_model,
+                     "KNN" = knn_predictions,
+                     "Decision Tree" = dt_model)
+
+# Perform further analysis with the best model (if applicable)
+if (best_model_name == "Random Forest") {
+  # Plot the importance of variables
+  varImpPlot(best_model, main="Variable Importance in Random Forest Model")
+} else if (best_model_name == "Decision Tree") {
+  # Plot the decision tree
+  rpart.plot(best_model, main="Decision Tree for Loan Status Prediction")
+}
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
