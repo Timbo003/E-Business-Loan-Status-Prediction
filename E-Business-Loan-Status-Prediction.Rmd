@@ -6,230 +6,164 @@ output:
 ---
 
 # Load libraries
-
 ```{r}
-library(readr)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(caret)
 library(randomForest)
+library(e1071)
 library(pROC)
-library(class)
 library(rpart)
 ```
 
-------------------------------------------------------------------------
-
-# Load the data
-
+# Load & Transform the data
 ```{r}
-rawData <- read_csv("loan_data.csv")
-
-# print col names
-names(rawData)
-```
+# Load the data
+rawData <- read.csv("loan_data.csv")
 
 # Transform the data
-
-```{r}
-rawData <- rawData %>% select(-Loan_ID)
-
-# Transform categorical variables to factors
-rawData <- rawData %>% mutate(
-  Married = factor(ifelse(Married == "Yes", TRUE, FALSE)),
-  Education = factor(ifelse(Education == "Graduate", TRUE, FALSE)),
-  Self_Employed = factor(ifelse(Self_Employed == "Yes", TRUE, FALSE)),
-  Gender = factor(Gender),
-  Dependents = factor(Dependents),
-  Property_Area = factor(Property_Area),
-  Loan_Status = factor(ifelse(Loan_Status == "Y", TRUE, FALSE))
-)
+rawData <- rawData %>%
+  select(-Loan_ID) %>%
+  mutate(Married = Married == "Yes",
+         Education = Education == "Graduate",
+         Self_Employed = Self_Employed == "Yes",
+         Gender = as.factor(Gender),
+         Dependents = as.factor(Dependents),
+         Property_Area = as.factor(Property_Area),
+         Loan_Status = as.factor(Loan_Status == "Y"))
+```
 
 # Feature Engineering
+```{r}
 rawData <- rawData %>%
   mutate(Total_Income = ApplicantIncome + CoapplicantIncome,
          Income_to_Loan = Total_Income / LoanAmount)
 
 # Drop all missing values just for testing TODO
-rawData <- na.omit(rawData)
+rawData <- drop_na(rawData)
 
 # Check for null values and handle them (if any)
 null_counts <- colSums(is.na(rawData))
 print(null_counts)
+```
 
+
+```{r}
 # Save the data as a csv #TODO
 write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
 ```
 
-------------------------------------------------------------------------
-
 # Initial Data sighting
-
 ```{r}
 # Plot 1: Distribution of Loan Status with customized colors
 ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
-  geom_bar(color = "black") +
+  geom_bar() +
   scale_fill_manual(values = c("TRUE" = "#90EE90", "FALSE" = "#FFB6C1")) +
-  theme_minimal() +
-  ggtitle("Distribution of Loan Status")
-```
+  ggtitle("Distribution of Loan Status") +
+  theme_minimal()
 
-```{r}
 # Plot 2: Distribution of Gender with customized RGB colors
 ggplot(rawData, aes(x = Gender, fill = Gender)) +
-  geom_bar(color = "black") +
+  geom_bar() +
   scale_fill_manual(values = c("Male" = "#89CFF0", "Female" = "#FFB6C1")) +
-  theme_minimal() +
-  ggtitle("Distribution of Gender")
-```
+  ggtitle("Distribution of Gender") +
+  theme_minimal()
 
-```{r}
 # Plot 3: Average Loan Amount by Property Area
 avg_loan_amount <- rawData %>%
   group_by(Property_Area) %>%
-  summarise(Average_LoanAmount = mean(LoanAmount, na.rm = TRUE))
+  summarize(LoanAmount = mean(LoanAmount))
 
-ggplot(avg_loan_amount, aes(x = Property_Area, y = Average_LoanAmount, fill = Property_Area)) +
-  geom_bar(stat = "identity", color = "black") +
-  theme_minimal() +
+ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
   ggtitle("Average Loan Amount by Property Area") +
-  labs(y = "Average Loan Amount", fill = "Property Area")
-```
+  ylab("Average Loan Amount") +
+  theme_minimal()
 
-```{r}
 # Plot 4: Distribution of Loan Status by Education
 ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
-  geom_bar(position = "dodge", color = "black") +
-  theme_minimal() +
+  geom_bar(position = "dodge") +
   ggtitle("Distribution of Loan Status by Education") +
-  labs(fill = "Education")
-```
+  theme_minimal()
 
-```{r}
 # Plot 5: Distribution of Loan Status by Self Employed status
 ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
-  geom_bar(position = "dodge", color = "black") +
-  theme_minimal() +
+  geom_bar(position = "dodge") +
   ggtitle("Distribution of Loan Status by Self Employed Status") +
-  labs(fill = "Self Employed")
+  theme_minimal()
 ```
 
-# Split Data into Training and Testing Sets
-
+# Model Training
 ```{r}
-set.seed(123)  # For reproducibility
-
-# Split the data into training (80%) and testing (20%) sets
+# Split Data into Training and Testing Sets
+set.seed(123)
 trainIndex <- createDataPartition(rawData$Loan_Status, p = .8, 
                                   list = FALSE, 
                                   times = 1)
-trainData <- rawData[ trainIndex,]
-testData  <- rawData[-trainIndex,]
+X_train <- rawData[trainIndex,]
+X_test <- rawData[-trainIndex,]
 ```
 
-# Scale the Data
-
 ```{r}
-# Identify numeric columns
-numeric_cols <- sapply(trainData, is.numeric)
-
-# Apply scaling and centering to numeric columns
-preProc <- preProcess(trainData[, numeric_cols], method = c("center", "scale"))
-trainData[, numeric_cols] <- predict(preProc, trainData[, numeric_cols])
-testData[, numeric_cols] <- predict(preProc, testData[, numeric_cols])
-
-print(head(trainData))
-print(head(testData))
-
+# Ensure Loan_Status is a factor
+X_train$Loan_Status <- as.factor(X_train$Loan_Status)
+X_test$Loan_Status <- as.factor(X_test$Loan_Status)
 ```
 
-# Train and Evaluate the Random Forest Model
-
 ```{r}
-# Random Forest hyperparameter tuning
-rf_grid <- expand.grid(mtry = c(2, 4, 6))  # Only include mtry in the grid
-train_control <- trainControl(method = "cv", number = 10)
-rf_model <- train(Loan_Status ~ ., data = trainData, method = "rf", tuneGrid = rf_grid, trControl = train_control, ntree = 500)  # Specify ntree separately
-
-# Predict on the test data
-rf_predictions <- predict(rf_model, newdata = testData)
-
-# Confusion matrix
-rf_conf_matrix <- confusionMatrix(rf_predictions, testData$Loan_Status)
-print(rf_conf_matrix)
-
-# Plot ROC curve and calculate AUC
-rf_roc_obj <- roc(testData$Loan_Status, as.numeric(rf_predictions))
-rf_auc <- auc(rf_roc_obj)
-plot(rf_roc_obj, main="ROC Curve for Random Forest Model")
-
-rf_metrics <- list(Accuracy = rf_conf_matrix$overall['Accuracy'], AUC = rf_auc)
-print(rf_metrics)
-
+# Preprocessing
+preprocess <- preProcess(X_train, method = c("center", "scale"))
+X_train <- predict(preprocess, X_train)
+X_test <- predict(preprocess, X_test)
 ```
 
-# Train and Evaluate the KNN Model
-
+### Train and Evaluate the Random Forest Model
 ```{r}
-# Load necessary library
-library(caret)
+rf_grid <- expand.grid(mtry = c(2, 4, 6))
+rf_control <- trainControl(method = "cv", number = 10)
+rf_model <- train(Loan_Status ~ ., data = X_train, method = "rf", 
+                  trControl = rf_control, tuneGrid = rf_grid)
 
-# Identify categorical columns
-categorical_cols <- sapply(trainData, is.factor)
+rf_predictions <- predict(rf_model, X_test)
+confusionMatrix(rf_predictions, X_test$Loan_Status)
 
-# Apply one-hot encoding to categorical columns
-dummies <- dummyVars(~ ., data = trainData[, categorical_cols])
-train_categorical <- predict(dummies, newdata = trainData[, categorical_cols])
-test_categorical <- predict(dummies, newdata = testData[, categorical_cols])
+rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
+rf_roc <- roc(X_test$Loan_Status, rf_probs)
+plot(rf_roc, main = "ROC Curve for Random Forest Model")
 
-# Combine numeric and encoded categorical features
-train_knn <- cbind(trainData[, numeric_cols], train_categorical)
-test_knn <- cbind(testData[, numeric_cols], test_categorical)
-
-# Train the KNN model (k = 5)
-knn_predictions <- knn(train = train_knn, test = test_knn, cl = trainData$Loan_Status, k = 5)
-
-# Confusion matrix
-knn_conf_matrix <- confusionMatrix(knn_predictions, testData$Loan_Status)
-print(knn_conf_matrix)
-
-# Plot ROC curve and calculate AUC
-knn_roc_obj <- roc(testData$Loan_Status, as.numeric(knn_predictions))
-knn_auc <- auc(knn_roc_obj)
-plot(knn_roc_obj, main="ROC Curve for KNN Model")
-
-knn_metrics <- list(Accuracy = knn_conf_matrix$overall['Accuracy'], AUC = knn_auc)
-print(knn_metrics)
-
+rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy), 
+                         AUC = auc(rf_roc))
 ```
 
-# Train and Evaluate the Decision Tree Model
-
+### Train and Evaluate the KNN Model
 ```{r}
-# Train the decision tree model
-dt_model <- rpart(Loan_Status ~ ., data = trainData, method = "class")
+knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
+knn_predictions <- predict(knn_model, X_test)
+confusionMatrix(knn_predictions, X_test$Loan_Status)
 
-# Predict on the test data
-dt_predictions <- predict(dt_model, newdata = testData, type = "class")
+knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
+knn_roc <- roc(X_test$Loan_Status, knn_probs)
+plot(knn_roc, main = "ROC Curve for KNN Model")
 
-# Confusion matrix
-dt_conf_matrix <- confusionMatrix(dt_predictions, testData$Loan_Status)
-print(dt_conf_matrix)
+knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
+                          AUC = auc(knn_roc))
+```
 
-# Plot ROC curve and calculate AUC
-dt_roc_obj <- roc(testData$Loan_Status, as.numeric(dt_predictions))
-dt_auc <- auc(dt_roc_obj)
-plot(dt_roc_obj, main="ROC Curve for Decision Tree Model")
+### Train and Evaluate the Decision Tree Model
+```{r}
+dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
+dt_predictions <- predict(dt_model, X_test)
+confusionMatrix(dt_predictions, X_test$Loan_Status)
 
-dt_metrics <- list(Accuracy = dt_conf_matrix$overall['Accuracy'], AUC = dt_auc)
-print(dt_metrics)
+dt_probs <- predict(dt_model, X_test, type = "prob")[, 2]
+dt_roc <- roc(X_test$Loan_Status, dt_probs)
+plot(dt_roc, main = "ROC Curve for Decision Tree Model")
 
+dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
+                         AUC = auc(dt_roc))
 ```
 
 # Compare Models
-
 ```{r}
-# Combine metrics into a data frame
 model_comparison <- data.frame(
   Model = c("Random Forest", "KNN", "Decision Tree"),
   Accuracy = c(rf_metrics$Accuracy, knn_metrics$Accuracy, dt_metrics$Accuracy),
@@ -237,23 +171,18 @@ model_comparison <- data.frame(
 )
 
 print(model_comparison)
+```
 
 # Identify the best model
-best_model_name <- model_comparison$Model[which.max(model_comparison$AUC)]
-cat("Best model based on AUC is:", best_model_name, "\n")
+```{r}
+best_model_name <- model_comparison[which.max(model_comparison$AUC), "Model"]
+print(paste("Best model based on AUC is:", best_model_name))
 
-best_model <- switch(best_model_name,
-                     "Random Forest" = rf_model,
-                     "KNN" = knn_predictions,
-                     "Decision Tree" = dt_model)
-
-# Perform further analysis with the best model (if applicable)
 if (best_model_name == "Random Forest") {
-  # Plot the importance of variables
-  varImpPlot(best_model, main="Variable Importance in Random Forest Model")
+  best_model <- rf_model$finalModel
+  varImpPlot(best_model)
 } else if (best_model_name == "Decision Tree") {
-  # Plot the decision tree
-  rpart.plot(best_model, main="Decision Tree for Loan Status Prediction")
+  best_model <- dt_model$finalModel
+  rpart.plot(best_model)
 }
-
 ```
