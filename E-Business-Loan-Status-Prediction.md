@@ -129,22 +129,6 @@ names(rawData)
 
 
 ``` r
-rawData <- read_csv("loan_data.csv")
-```
-
-```
-## Rows: 381 Columns: 13
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (8): Loan_ID, Gender, Married, Dependents, Education, Self_Employed, Pro...
-## dbl (5): ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term, C...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-``` r
-# Drop the Loan_ID column
 rawData <- rawData %>% select(-Loan_ID)
 
 # Transform categorical variables to factors
@@ -158,37 +142,14 @@ rawData <- rawData %>% mutate(
   Loan_Status = factor(ifelse(Loan_Status == "Y", TRUE, FALSE))
 )
 
-print(rawData)
-```
+# Feature Engineering
+rawData <- rawData %>%
+  mutate(Total_Income = ApplicantIncome + CoapplicantIncome,
+         Income_to_Loan = Total_Income / LoanAmount)
 
-```
-## # A tibble: 381 × 12
-##    Gender Married Dependents Education Self_Employed ApplicantIncome
-##    <fct>  <fct>   <fct>      <fct>     <fct>                   <dbl>
-##  1 Male   TRUE    1          TRUE      FALSE                    4583
-##  2 Male   TRUE    0          TRUE      TRUE                     3000
-##  3 Male   TRUE    0          FALSE     FALSE                    2583
-##  4 Male   FALSE   0          TRUE      FALSE                    6000
-##  5 Male   TRUE    0          FALSE     FALSE                    2333
-##  6 Male   TRUE    2          TRUE      FALSE                    3200
-##  7 Male   TRUE    2          TRUE      <NA>                     2500
-##  8 Male   FALSE   0          TRUE      FALSE                    1853
-##  9 Male   TRUE    2          TRUE      FALSE                    1299
-## 10 Male   FALSE   0          TRUE      FALSE                    4950
-## # ℹ 371 more rows
-## # ℹ 6 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
-## #   Loan_Amount_Term <dbl>, Credit_History <dbl>, Property_Area <fct>,
-## #   Loan_Status <fct>
-```
-
-
-``` r
-# drop all missing values just for testing TODO
+# Drop all missing values just for testing TODO
 rawData <- na.omit(rawData)
-```
 
-
-``` r
 # Check for null values and handle them (if any)
 null_counts <- colSums(is.na(rawData))
 print(null_counts)
@@ -200,12 +161,13 @@ print(null_counts)
 ##     Self_Employed   ApplicantIncome CoapplicantIncome        LoanAmount 
 ##                 0                 0                 0                 0 
 ##  Loan_Amount_Term    Credit_History     Property_Area       Loan_Status 
-##                 0                 0                 0                 0
+##                 0                 0                 0                 0 
+##      Total_Income    Income_to_Loan 
+##                 0                 0
 ```
 
-
 ``` r
-# save the data as a csv #TODO
+# Save the data as a csv #TODO
 write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
 ```
 
@@ -223,7 +185,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
   ggtitle("Distribution of Loan Status")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
 ``` r
@@ -235,7 +197,7 @@ ggplot(rawData, aes(x = Gender, fill = Gender)) +
   ggtitle("Distribution of Gender")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 
 ``` r
@@ -251,7 +213,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = Average_LoanAmount, fill = Pr
   labs(y = "Average Loan Amount", fill = "Property Area")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 ``` r
@@ -263,7 +225,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
   labs(fill = "Education")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 ``` r
@@ -275,7 +237,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
   labs(fill = "Self Employed")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 # Split Data into Training and Testing Sets
 
@@ -307,7 +269,7 @@ print(head(trainData))
 ```
 
 ```
-## # A tibble: 6 × 12
+## # A tibble: 6 × 14
 ##   Gender Married Dependents Education Self_Employed ApplicantIncome
 ##   <fct>  <fct>   <fct>      <fct>     <fct>                   <dbl>
 ## 1 Male   TRUE    0          TRUE      TRUE                   -0.400
@@ -316,9 +278,9 @@ print(head(trainData))
 ## 4 Male   FALSE   0          TRUE      FALSE                  -1.15 
 ## 5 Male   TRUE    2          TRUE      FALSE                  -1.52 
 ## 6 Male   FALSE   0          TRUE      FALSE                   0.880
-## # ℹ 6 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
+## # ℹ 8 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
 ## #   Loan_Amount_Term <dbl>, Credit_History <dbl>, Property_Area <fct>,
-## #   Loan_Status <fct>
+## #   Loan_Status <fct>, Total_Income <dbl>, Income_to_Loan <dbl>
 ```
 
 ``` r
@@ -326,7 +288,7 @@ print(head(testData))
 ```
 
 ```
-## # A tibble: 6 × 12
+## # A tibble: 6 × 14
 ##   Gender Married Dependents Education Self_Employed ApplicantIncome
 ##   <fct>  <fct>   <fct>      <fct>     <fct>                   <dbl>
 ## 1 Male   TRUE    1          TRUE      FALSE                  0.639 
@@ -335,17 +297,19 @@ print(head(testData))
 ## 4 Male   FALSE   0          FALSE     FALSE                  0.0909
 ## 5 Male   FALSE   0          TRUE      FALSE                 -1.19  
 ## 6 Male   TRUE    1          TRUE      FALSE                  1.34  
-## # ℹ 6 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
+## # ℹ 8 more variables: CoapplicantIncome <dbl>, LoanAmount <dbl>,
 ## #   Loan_Amount_Term <dbl>, Credit_History <dbl>, Property_Area <fct>,
-## #   Loan_Status <fct>
+## #   Loan_Status <fct>, Total_Income <dbl>, Income_to_Loan <dbl>
 ```
 
 # Train and Evaluate the Random Forest Model
 
 
 ``` r
-# Train the model
-rf_model <- randomForest(Loan_Status ~ ., data = trainData, importance = TRUE, ntree = 500)
+# Random Forest hyperparameter tuning
+rf_grid <- expand.grid(mtry = c(2, 4, 6))  # Only include mtry in the grid
+train_control <- trainControl(method = "cv", number = 10)
+rf_model <- train(Loan_Status ~ ., data = trainData, method = "rf", tuneGrid = rf_grid, trControl = train_control, ntree = 500)  # Specify ntree separately
 
 # Predict on the test data
 rf_predictions <- predict(rf_model, newdata = testData)
@@ -360,26 +324,26 @@ print(rf_conf_matrix)
 ## 
 ##           Reference
 ## Prediction FALSE TRUE
-##      FALSE    10    1
-##      TRUE      7   42
+##      FALSE     9    0
+##      TRUE      8   43
 ##                                           
 ##                Accuracy : 0.8667          
 ##                  95% CI : (0.7541, 0.9406)
 ##     No Information Rate : 0.7167          
 ##     P-Value [Acc > NIR] : 0.004937        
 ##                                           
-##                   Kappa : 0.6325          
+##                   Kappa : 0.6172          
 ##                                           
-##  Mcnemar's Test P-Value : 0.077100        
+##  Mcnemar's Test P-Value : 0.013328        
 ##                                           
-##             Sensitivity : 0.5882          
-##             Specificity : 0.9767          
-##          Pos Pred Value : 0.9091          
-##          Neg Pred Value : 0.8571          
+##             Sensitivity : 0.5294          
+##             Specificity : 1.0000          
+##          Pos Pred Value : 1.0000          
+##          Neg Pred Value : 0.8431          
 ##              Prevalence : 0.2833          
-##          Detection Rate : 0.1667          
-##    Detection Prevalence : 0.1833          
-##       Balanced Accuracy : 0.7825          
+##          Detection Rate : 0.1500          
+##    Detection Prevalence : 0.1500          
+##       Balanced Accuracy : 0.7647          
 ##                                           
 ##        'Positive' Class : FALSE           
 ## 
@@ -403,7 +367,7 @@ rf_auc <- auc(rf_roc_obj)
 plot(rf_roc_obj, main="ROC Curve for Random Forest Model")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 rf_metrics <- list(Accuracy = rf_conf_matrix$overall['Accuracy'], AUC = rf_auc)
@@ -416,16 +380,27 @@ print(rf_metrics)
 ## 0.8666667 
 ## 
 ## $AUC
-## Area under the curve: 0.7825
+## Area under the curve: 0.7647
 ```
 
 # Train and Evaluate the KNN Model
 
 
 ``` r
-# Ensure that KNN uses numeric features only
-train_knn <- trainData[, numeric_cols]
-test_knn <- testData[, numeric_cols]
+# Load necessary library
+library(caret)
+
+# Identify categorical columns
+categorical_cols <- sapply(trainData, is.factor)
+
+# Apply one-hot encoding to categorical columns
+dummies <- dummyVars(~ ., data = trainData[, categorical_cols])
+train_categorical <- predict(dummies, newdata = trainData[, categorical_cols])
+test_categorical <- predict(dummies, newdata = testData[, categorical_cols])
+
+# Combine numeric and encoded categorical features
+train_knn <- cbind(trainData[, numeric_cols], train_categorical)
+test_knn <- cbind(testData[, numeric_cols], test_categorical)
 
 # Train the KNN model (k = 5)
 knn_predictions <- knn(train = train_knn, test = test_knn, cl = trainData$Loan_Status, k = 5)
@@ -440,26 +415,26 @@ print(knn_conf_matrix)
 ## 
 ##           Reference
 ## Prediction FALSE TRUE
-##      FALSE    10    1
-##      TRUE      7   42
+##      FALSE    14    0
+##      TRUE      3   43
 ##                                           
-##                Accuracy : 0.8667          
-##                  95% CI : (0.7541, 0.9406)
+##                Accuracy : 0.95            
+##                  95% CI : (0.8608, 0.9896)
 ##     No Information Rate : 0.7167          
-##     P-Value [Acc > NIR] : 0.004937        
+##     P-Value [Acc > NIR] : 5.036e-06       
 ##                                           
-##                   Kappa : 0.6325          
+##                   Kappa : 0.8699          
 ##                                           
-##  Mcnemar's Test P-Value : 0.077100        
+##  Mcnemar's Test P-Value : 0.2482          
 ##                                           
-##             Sensitivity : 0.5882          
-##             Specificity : 0.9767          
-##          Pos Pred Value : 0.9091          
-##          Neg Pred Value : 0.8571          
+##             Sensitivity : 0.8235          
+##             Specificity : 1.0000          
+##          Pos Pred Value : 1.0000          
+##          Neg Pred Value : 0.9348          
 ##              Prevalence : 0.2833          
-##          Detection Rate : 0.1667          
-##    Detection Prevalence : 0.1833          
-##       Balanced Accuracy : 0.7825          
+##          Detection Rate : 0.2333          
+##    Detection Prevalence : 0.2333          
+##       Balanced Accuracy : 0.9118          
 ##                                           
 ##        'Positive' Class : FALSE           
 ## 
@@ -483,7 +458,7 @@ knn_auc <- auc(knn_roc_obj)
 plot(knn_roc_obj, main="ROC Curve for KNN Model")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 knn_metrics <- list(Accuracy = knn_conf_matrix$overall['Accuracy'], AUC = knn_auc)
@@ -492,11 +467,11 @@ print(knn_metrics)
 
 ```
 ## $Accuracy
-##  Accuracy 
-## 0.8666667 
+## Accuracy 
+##     0.95 
 ## 
 ## $AUC
-## Area under the curve: 0.7825
+## Area under the curve: 0.9118
 ```
 
 # Train and Evaluate the Decision Tree Model
@@ -562,7 +537,7 @@ dt_auc <- auc(dt_roc_obj)
 plot(dt_roc_obj, main="ROC Curve for Decision Tree Model")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 dt_metrics <- list(Accuracy = dt_conf_matrix$overall['Accuracy'], AUC = dt_auc)
@@ -594,8 +569,8 @@ print(model_comparison)
 
 ```
 ##           Model  Accuracy       AUC
-## 1 Random Forest 0.8666667 0.7824897
-## 2           KNN 0.8666667 0.7824897
+## 1 Random Forest 0.8666667 0.7647059
+## 2           KNN 0.9500000 0.9117647
 ## 3 Decision Tree 0.8500000 0.7530780
 ```
 
@@ -606,7 +581,7 @@ cat("Best model based on AUC is:", best_model_name, "\n")
 ```
 
 ```
-## Best model based on AUC is: Random Forest
+## Best model based on AUC is: KNN
 ```
 
 ``` r
@@ -624,5 +599,3 @@ if (best_model_name == "Random Forest") {
   rpart.plot(best_model, main="Decision Tree for Loan Status Prediction")
 }
 ```
-
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
