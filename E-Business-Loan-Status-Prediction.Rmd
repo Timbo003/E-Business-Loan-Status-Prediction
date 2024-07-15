@@ -11,6 +11,8 @@ output:
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(caret)
+library(randomForest)
 ```
 
 ------------------------------------------------------------------------
@@ -27,20 +29,35 @@ names(rawData)
 # Transform the data
 
 ```{r}
+rawData <- read_csv("loan_data.csv")
+
 # Drop the Loan_ID column
 rawData <- rawData %>% select(-Loan_ID)
 
-# Change Married from Y/N to True/False
-rawData <- rawData %>% mutate(Married = ifelse(Married == "Yes", TRUE, FALSE))
+# Transform categorical variables to factors
+rawData <- rawData %>% mutate(
+  Married = factor(ifelse(Married == "Yes", TRUE, FALSE)),
+  Education = factor(ifelse(Education == "Graduate", TRUE, FALSE)),
+  Self_Employed = factor(ifelse(Self_Employed == "Yes", TRUE, FALSE)),
+  Gender = factor(Gender),
+  Dependents = factor(Dependents),
+  Property_Area = factor(Property_Area),
+  Loan_Status = factor(Loan_Status)
+)
 
-# Change Education from Y/N to True/False
-rawData <- rawData %>% mutate(Education = ifelse(Education == "Graduate", TRUE, FALSE))
+print(rawData)
+```
+```{r}
+# drop all missing values just for testing TODO
+rawData <- na.omit(rawData)
+```
 
-# Change Education from Y/N to True/False
-rawData <- rawData %>% mutate(Self_Employed = ifelse(Self_Employed == "Yes", TRUE, FALSE))
 
-# print data head
-head(rawData)
+
+```{r}
+# Check for null values and handle them (if any)
+null_counts <- colSums(is.na(rawData))
+print(null_counts)
 ```
 
 ------------------------------------------------------------------------
@@ -97,5 +114,47 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
 ```
 
 
+# Split Data into Training and Testing Sets
+```{r}
+set.seed(123)  # For reproducibility
 
-# teststet
+# Split the data into training (80%) and testing (20%) sets
+trainIndex <- createDataPartition(rawData$Loan_Status, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+trainData <- rawData[ trainIndex,]
+testData  <- rawData[-trainIndex,]
+```
+
+# Train the Random Forest Model
+```{r}
+# Train the model
+rf_model <- randomForest(Loan_Status ~ ., data = trainData, importance = TRUE, ntree = 500)
+
+# Print the model
+print(rf_model)
+
+# Check the importance of variables
+importance(rf_model)
+```
+
+# Evaluate the Model
+```{r}
+# Predict on the test data
+predictions <- predict(rf_model, newdata = testData)
+
+# Confusion matrix
+confusionMatrix(predictions, testData$Loan_Status)
+
+# Plot ROC curve and calculate AUC
+library(pROC)
+roc_obj <- roc(testData$Loan_Status, as.numeric(predictions))
+auc(roc_obj)
+plot(roc_obj, main="ROC Curve for Random Forest Model")
+```
+
+# Visualize Important Variables
+```{r}
+# Plot the importance of variables
+varImpPlot(rf_model, main="Variable Importance in Random Forest Model")
+```
