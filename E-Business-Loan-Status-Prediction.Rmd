@@ -1,0 +1,93 @@
+---
+title: "E-Business Loan Status Prediction"
+output: html_notebook
+---
+
+# Load libraries
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+------------------------------------------------------------------------
+
+# Load the data
+
+```{r}
+rawData <- read_csv("loan_data.csv")
+
+# print col names
+names(rawData)
+```
+# Transform the data
+
+```{r}
+# Drop the Loan_ID column
+rawData <- rawData %>% select(-Loan_ID)
+
+# Change Married from Y/N to True/False
+rawData <- rawData %>% mutate(Married = ifelse(Married == "Yes", TRUE, FALSE))
+
+# Change Education from Y/N to True/False
+rawData <- rawData %>% mutate(Education = ifelse(Education == "Graduate", TRUE, FALSE))
+
+# Change Education from Y/N to True/False
+rawData <- rawData %>% mutate(Self_Employed = ifelse(Self_Employed == "Yes", TRUE, FALSE))
+
+# print data head
+head(rawData)
+```
+
+------------------------------------------------------------------------
+
+# Initial Data sighting
+
+```{r}
+# Plot 1: Distribution of Loan Status with customized colors
+ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
+  geom_bar(color = "black") +
+  scale_fill_manual(values = c("Y" = "#90EE90", "N" = "#FFB6C1")) +
+  theme_minimal() +
+  ggtitle("Distribution of Loan Status")
+```
+```{r}
+# Plot 2: Distribution of Gender with customized RGB colors
+ggplot(rawData, aes(x = Gender, fill = Gender)) +
+  geom_bar(color = "black") +
+  scale_fill_manual(values = c("Male" = "#89CFF0", "Female" = "#FFB6C1")) +
+  theme_minimal() +
+  ggtitle("Distribution of Gender")
+```
+
+```{r}
+# Plot 3: Average Loan Amount by Property Area
+avg_loan_amount <- rawData %>%
+  group_by(Property_Area) %>%
+  summarise(Average_LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+ggplot(avg_loan_amount, aes(x = Property_Area, y = Average_LoanAmount, fill = Property_Area)) +
+  geom_bar(stat = "identity", color = "black") +
+  theme_minimal() +
+  ggtitle("Average Loan Amount by Property Area") +
+  labs(y = "Average Loan Amount", fill = "Property Area")
+```
+
+```{r}
+# Plot 4: Distribution of Loan Status by Education
+ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
+  geom_bar(position = "dodge", color = "black") +
+  theme_minimal() +
+  ggtitle("Distribution of Loan Status by Education") +
+  labs(fill = "Education")
+```
+
+```{r}
+# Plot 5: Distribution of Loan Status by Self Employed status
+ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
+  geom_bar(position = "dodge", color = "black") +
+  theme_minimal() +
+  ggtitle("Distribution of Loan Status by Self Employed Status") +
+  labs(fill = "Self Employed")
+```
