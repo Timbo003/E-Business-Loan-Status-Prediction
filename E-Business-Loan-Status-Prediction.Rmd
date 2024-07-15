@@ -32,9 +32,6 @@ names(rawData)
 # Transform the data
 
 ```{r}
-rawData <- read_csv("loan_data.csv")
-
-# Drop the Loan_ID column
 rawData <- rawData %>% select(-Loan_ID)
 
 # Transform categorical variables to factors
@@ -48,22 +45,19 @@ rawData <- rawData %>% mutate(
   Loan_Status = factor(ifelse(Loan_Status == "Y", TRUE, FALSE))
 )
 
-print(rawData)
-```
+# Feature Engineering
+rawData <- rawData %>%
+  mutate(Total_Income = ApplicantIncome + CoapplicantIncome,
+         Income_to_Loan = Total_Income / LoanAmount)
 
-```{r}
-# drop all missing values just for testing TODO
+# Drop all missing values just for testing TODO
 rawData <- na.omit(rawData)
-```
 
-```{r}
 # Check for null values and handle them (if any)
 null_counts <- colSums(is.na(rawData))
 print(null_counts)
-```
 
-```{r}
-# save the data as a csv #TODO
+# Save the data as a csv #TODO
 write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
 ```
 
@@ -146,13 +140,16 @@ testData[, numeric_cols] <- predict(preProc, testData[, numeric_cols])
 
 print(head(trainData))
 print(head(testData))
+
 ```
 
 # Train and Evaluate the Random Forest Model
 
 ```{r}
-# Train the model
-rf_model <- randomForest(Loan_Status ~ ., data = trainData, importance = TRUE, ntree = 500)
+# Random Forest hyperparameter tuning
+rf_grid <- expand.grid(mtry = c(2, 4, 6))  # Only include mtry in the grid
+train_control <- trainControl(method = "cv", number = 10)
+rf_model <- train(Loan_Status ~ ., data = trainData, method = "rf", tuneGrid = rf_grid, trControl = train_control, ntree = 500)  # Specify ntree separately
 
 # Predict on the test data
 rf_predictions <- predict(rf_model, newdata = testData)
@@ -168,14 +165,26 @@ plot(rf_roc_obj, main="ROC Curve for Random Forest Model")
 
 rf_metrics <- list(Accuracy = rf_conf_matrix$overall['Accuracy'], AUC = rf_auc)
 print(rf_metrics)
+
 ```
 
 # Train and Evaluate the KNN Model
 
 ```{r}
-# Ensure that KNN uses numeric features only
-train_knn <- trainData[, numeric_cols]
-test_knn <- testData[, numeric_cols]
+# Load necessary library
+library(caret)
+
+# Identify categorical columns
+categorical_cols <- sapply(trainData, is.factor)
+
+# Apply one-hot encoding to categorical columns
+dummies <- dummyVars(~ ., data = trainData[, categorical_cols])
+train_categorical <- predict(dummies, newdata = trainData[, categorical_cols])
+test_categorical <- predict(dummies, newdata = testData[, categorical_cols])
+
+# Combine numeric and encoded categorical features
+train_knn <- cbind(trainData[, numeric_cols], train_categorical)
+test_knn <- cbind(testData[, numeric_cols], test_categorical)
 
 # Train the KNN model (k = 5)
 knn_predictions <- knn(train = train_knn, test = test_knn, cl = trainData$Loan_Status, k = 5)
@@ -214,6 +223,7 @@ plot(dt_roc_obj, main="ROC Curve for Decision Tree Model")
 
 dt_metrics <- list(Accuracy = dt_conf_matrix$overall['Accuracy'], AUC = dt_auc)
 print(dt_metrics)
+
 ```
 
 # Compare Models
@@ -245,4 +255,5 @@ if (best_model_name == "Random Forest") {
   # Plot the decision tree
   rpart.plot(best_model, main="Decision Tree for Loan Status Prediction")
 }
+
 ```
