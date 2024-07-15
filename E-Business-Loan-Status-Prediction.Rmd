@@ -1,6 +1,6 @@
 ---
 title: "E-Business Loan Status Prediction"
-output: html_notebook
+output: rmarkdown::github_document
 ---
 
 # Load libraries
