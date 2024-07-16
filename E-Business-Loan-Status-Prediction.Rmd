@@ -68,29 +68,60 @@ ggplot(rawData, aes(x = Gender, fill = Gender)) +
   ggtitle("Distribution of Gender") +
   theme_minimal()
 
-# Plot 3: Average Loan Amount by Property Area
+# Plot 3: Distribution of Loan Status by Education
+ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
+  geom_bar(position = "dodge") +
+  ggtitle("Distribution of Loan Status by Education") +
+  theme_minimal()
+
+# Plot 4: Distribution of Loan Status by Self Employed status
+ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
+  geom_bar(position = "dodge") +
+  ggtitle("Distribution of Loan Status by Self Employed Status") +
+  theme_minimal()
+
+#Average Loan Amounts Requested
+
+# Plot 1: Average Loan Amount requested by Gender
+# Calculate the average loan amount by gender and remove missing values
+avg_loan_amount_gender <- rawData %>%
+  filter(!is.na(Gender) & Gender != "") %>%
+  group_by(Gender) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Create the bar plot
+ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Loan Amount requested by Gender") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+
+# Plot 2: Average Loan Amount requested by Property Area
 avg_loan_amount <- rawData %>%
   group_by(Property_Area) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
 ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   geom_bar(stat = "identity") +
-  ggtitle("Average Loan Amount by Property Area") +
+  ggtitle("Average Loan Amount requested by Property Area") +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-# Plot 4: Distribution of Loan Status by Education
-ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
-  geom_bar(position = "dodge") +
-  ggtitle("Distribution of Loan Status by Education") +
-  theme_minimal()
+#Average Loan amounts Granted
 
-# Plot 5: Distribution of Loan Status by Self Employed status
-ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
-  geom_bar(position = "dodge") +
-  ggtitle("Distribution of Loan Status by Self Employed Status") +
+# Plot 1: Average Loan Amount  granted granted by Gender
+# Calculate the average loan amount by gender and remove missing values
+avg_loan_amount_gender <- rawData %>%
+  filter(Loan_Status == "TRUE" & !is.na(Gender) & Gender != "") %>%
+  group_by(Gender) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Create the bar plot
+ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Loan Amount granted by Gender") +
+  ylab("Average Loan Amount") +
   theme_minimal()
-```
 
 # Model Training
 ```{r}
