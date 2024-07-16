@@ -6,6 +6,7 @@ output:
 ---
 
 # Load libraries
+
 ```{r}
 library(tidyverse)
 library(caret)
@@ -16,6 +17,7 @@ library(rpart)
 ```
 
 # Load & Transform the data
+
 ```{r}
 # Load the data
 rawData <- read.csv("loan_data.csv")
@@ -33,6 +35,7 @@ rawData <- rawData %>%
 ```
 
 # Feature Engineering
+
 ```{r}
 rawData <- rawData %>%
   mutate(Total_Income = ApplicantIncome + CoapplicantIncome,
@@ -46,13 +49,13 @@ null_counts <- colSums(is.na(rawData))
 print(null_counts)
 ```
 
-
 ```{r}
 # Save the data as a csv #TODO
 write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
 ```
 
 # Initial Data sighting
+
 ```{r}
 # Plot 1: Distribution of Loan Status with customized colors
 ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
@@ -80,7 +83,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
   ggtitle("Distribution of Loan Status by Self Employed Status") +
   theme_minimal()
 
-#Average Loan Amounts Requested
+#Average Loan Amounts Requested and Granted
 
 # Plot 1: Average Loan Amount requested by Gender
 # Calculate the average loan amount by gender and remove missing values
@@ -96,7 +99,21 @@ ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-# Plot 2: Average Loan Amount requested by Property Area
+# Plot 2: Average Loan Amount  granted granted by Gender
+# Calculate the average loan amount by gender and remove missing values
+avg_loan_amount_gender <- rawData %>%
+  filter(Loan_Status == "TRUE" & !is.na(Gender) & Gender != "") %>%
+  group_by(Gender) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Create the bar plot
+ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  ggtitle("Average Loan Amount granted by Gender") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+
+# Plot 3: Average Loan Amount requested by Property Area
 avg_loan_amount <- rawData %>%
   group_by(Property_Area) %>%
   summarize(LoanAmount = mean(LoanAmount))
@@ -107,24 +124,24 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-#Average Loan amounts Granted
 
-# Plot 1: Average Loan Amount  granted granted by Gender
-# Calculate the average loan amount by gender and remove missing values
-avg_loan_amount_gender <- rawData %>%
-  filter(Loan_Status == "TRUE" & !is.na(Gender) & Gender != "") %>%
-  group_by(Gender) %>%
-  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+# Plot 3: Average Loan Amount requested by Property Area
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Property_Area) %>%
+  summarize(LoanAmount = mean(LoanAmount))
 
-# Create the bar plot
-ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
-  geom_bar(stat = "identity") +
-  ggtitle("Average Loan Amount granted by Gender") +
+ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  ggtitle("Average Loan Amount granted by Property Area") +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-# Model Training
+```
+
+
 ```{r}
+# Model Training
 # Split Data into Training and Testing Sets
 set.seed(123)
 trainIndex <- createDataPartition(rawData$Loan_Status, p = .8, 
@@ -148,6 +165,7 @@ X_test <- predict(preprocess, X_test)
 ```
 
 ### Train and Evaluate the Random Forest Model
+
 ```{r}
 rf_grid <- expand.grid(mtry = c(2, 4, 6))
 rf_control <- trainControl(method = "cv", number = 10)
@@ -166,6 +184,7 @@ rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy),
 ```
 
 ### Train and Evaluate the KNN Model
+
 ```{r}
 knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
 knn_predictions <- predict(knn_model, X_test)
@@ -180,6 +199,7 @@ knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy),
 ```
 
 ### Train and Evaluate the Decision Tree Model
+
 ```{r}
 dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
 dt_predictions <- predict(dt_model, X_test)
@@ -194,6 +214,7 @@ dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy),
 ```
 
 # Compare Models
+
 ```{r}
 model_comparison <- data.frame(
   Model = c("Random Forest", "KNN", "Decision Tree"),
@@ -205,6 +226,7 @@ print(model_comparison)
 ```
 
 # Identify the best model
+
 ```{r}
 best_model_name <- model_comparison[which.max(model_comparison$AUC), "Model"]
 print(paste("Best model based on AUC is:", best_model_name))
