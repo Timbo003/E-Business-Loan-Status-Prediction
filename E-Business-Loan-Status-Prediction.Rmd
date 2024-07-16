@@ -137,6 +137,17 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
+# Plot 4: Average Loan Amount requested by Marriage Status
+avg_loan_amount <- rawData %>%
+  group_by(Married) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Loan Amount requested by Marriage Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+
 ```
 
 
@@ -181,6 +192,20 @@ plot(rf_roc, main = "ROC Curve for Random Forest Model")
 
 rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy), 
                          AUC = auc(rf_roc))
+
+# #Predicting for the testset 
+# predTest = predict(mod, newdata=churn.test, type="response")
+# 
+# #ROC AND AUC
+# rocr.log.pred <- prediction(predTest, churn.test$Churn)
+# logPerformance <- performance(rocr.log.pred, "tpr", "fpr")
+# plot(logPerformance, colorize = TRUE)
+# abline(0, 1)
+# logAuc<-performance(rocr.log.pred,"auc")
+# logAuc@y.values
+# as.numeric(performance(rocr.log.pred, "auc")@y.values)
+# 
+# summary(mod)
 ```
 
 ### Train and Evaluate the KNN Model
