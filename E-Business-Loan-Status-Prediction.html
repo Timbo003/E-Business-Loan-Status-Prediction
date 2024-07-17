@@ -866,8 +866,7 @@ X_test &lt;- predict(preprocess, X_test)</code></pre>
     ylab(&quot;True Positive Rate&quot;)
 }</code></pre>
 <pre class="r"><code># Define an expanded grid for Random Forest
-rf_grid &lt;- expand.grid(mtry = c(2, 4, 6, 8)    # Number of variables to try at each split      
-)
+rf_grid &lt;- expand.grid(mtry = c(2, 4, 6, 8))    # Number of variables to try at each split      
 
 # Define control for Random Forest with cross-validation
 rf_control &lt;- trainControl(method = &quot;cv&quot;, number = 10)
@@ -932,8 +931,11 @@ print(rf_metrics)</code></pre>
 </div>
 <div id="train-and-evaluate-the-knn-model" class="section level3">
 <h3>Train and Evaluate the KNN Model</h3>
-<pre class="r"><code># Train the KNN model
-knn_model &lt;- train(Loan_Status ~ ., data = X_train, method = &quot;knn&quot;, tuneLength = 5)
+<pre class="r"><code># Define control for KNN with cross-validation
+knn_control &lt;- trainControl(method = &quot;cv&quot;, number = 10)
+
+# Train the KNN model with cross-validation
+knn_model &lt;- train(Loan_Status ~ ., data = X_train, method = &quot;knn&quot;, tuneLength = 5, trControl = knn_control)
 
 # Predict on the test set
 knn_predictions &lt;- predict(knn_model, X_test)
@@ -979,13 +981,17 @@ print(plot_roc_curve(knn_roc, &quot;KNN&quot;))</code></pre>
 knn_metrics &lt;- data.frame(Accuracy = max(knn_model$results$Accuracy), 
                           AUC = auc(knn_roc))
 print(knn_metrics)</code></pre>
-<pre><code>##   Accuracy       AUC
-## 1 0.843479 0.6468085</code></pre>
+<pre><code>##    Accuracy       AUC
+## 1 0.8493113 0.6468085</code></pre>
 </div>
 <div id="train-and-evaluate-the-decision-tree-model" class="section level3">
 <h3>Train and Evaluate the Decision Tree Model</h3>
 <pre class="r"><code># Train the Decision Tree model
-dt_model &lt;- train(Loan_Status ~ ., data = X_train, method = &quot;rpart&quot;)
+# Define control for Decision Tree with cross-validation
+dt_control &lt;- trainControl(method = &quot;cv&quot;, number = 10)
+
+# Train the Decision Tree model with cross-validation
+dt_model &lt;- train(Loan_Status ~ ., data = X_train, method = &quot;rpart&quot;, trControl = dt_control)
 
 # Predict on the test set
 dt_predictions &lt;- predict(dt_model, X_test)
@@ -1032,7 +1038,7 @@ dt_metrics &lt;- data.frame(Accuracy = max(dt_model$results$Accuracy),
                          AUC = auc(dt_roc))
 print(dt_metrics)</code></pre>
 <pre><code>##    Accuracy       AUC
-## 1 0.8329031 0.6643617</code></pre>
+## 1 0.8382275 0.6643617</code></pre>
 </div>
 </div>
 <div id="compare-models" class="section level1">
@@ -1046,8 +1052,8 @@ print(dt_metrics)</code></pre>
 print(model_comparison)</code></pre>
 <pre><code>##           Model  Accuracy       AUC
 ## 1 Random Forest 0.8437831 0.7856383
-## 2           KNN 0.8434790 0.6468085
-## 3 Decision Tree 0.8329031 0.6643617</code></pre>
+## 2           KNN 0.8493113 0.6468085
+## 3 Decision Tree 0.8382275 0.6643617</code></pre>
 </div>
 <div id="identify-the-best-model" class="section level1">
 <h1>Identify the best model</h1>

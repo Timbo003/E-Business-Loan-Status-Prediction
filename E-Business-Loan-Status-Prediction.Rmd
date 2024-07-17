@@ -497,8 +497,7 @@ plot_roc_curve <- function(roc_obj, model_name) {
 
 ```{r}
 # Define an expanded grid for Random Forest
-rf_grid <- expand.grid(mtry = c(2, 4, 6, 8)    # Number of variables to try at each split      
-)
+rf_grid <- expand.grid(mtry = c(2, 4, 6, 8))    # Number of variables to try at each split      
 
 # Define control for Random Forest with cross-validation
 rf_control <- trainControl(method = "cv", number = 10)
@@ -537,8 +536,11 @@ print(rf_metrics)
 ### Train and Evaluate the KNN Model
 
 ```{r}
-# Train the KNN model
-knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
+# Define control for KNN with cross-validation
+knn_control <- trainControl(method = "cv", number = 10)
+
+# Train the KNN model with cross-validation
+knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5, trControl = knn_control)
 
 # Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
@@ -557,13 +559,18 @@ print(plot_roc_curve(knn_roc, "KNN"))
 knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
                           AUC = auc(knn_roc))
 print(knn_metrics)
+
 ```
 
 ### Train and Evaluate the Decision Tree Model
 
 ```{r}
 # Train the Decision Tree model
-dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
+# Define control for Decision Tree with cross-validation
+dt_control <- trainControl(method = "cv", number = 10)
+
+# Train the Decision Tree model with cross-validation
+dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart", trControl = dt_control)
 
 # Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
@@ -582,6 +589,7 @@ print(plot_roc_curve(dt_roc, "Decision Tree"))
 dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
                          AUC = auc(dt_roc))
 print(dt_metrics)
+
 ```
 
 # Compare Models

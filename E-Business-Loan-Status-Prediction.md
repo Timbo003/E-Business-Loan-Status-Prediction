@@ -720,8 +720,7 @@ plot_roc_curve <- function(roc_obj, model_name) {
 
 ``` r
 # Define an expanded grid for Random Forest
-rf_grid <- expand.grid(mtry = c(2, 4, 6, 8)    # Number of variables to try at each split      
-)
+rf_grid <- expand.grid(mtry = c(2, 4, 6, 8))    # Number of variables to try at each split      
 
 # Define control for Random Forest with cross-validation
 rf_control <- trainControl(method = "cv", number = 10)
@@ -811,8 +810,11 @@ print(rf_metrics)
 
 
 ``` r
-# Train the KNN model
-knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
+# Define control for KNN with cross-validation
+knn_control <- trainControl(method = "cv", number = 10)
+
+# Train the KNN model with cross-validation
+knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5, trControl = knn_control)
 
 # Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
@@ -880,8 +882,8 @@ print(knn_metrics)
 ```
 
 ```
-##   Accuracy       AUC
-## 1 0.843479 0.6468085
+##    Accuracy       AUC
+## 1 0.8493113 0.6468085
 ```
 
 ### Train and Evaluate the Decision Tree Model
@@ -889,7 +891,11 @@ print(knn_metrics)
 
 ``` r
 # Train the Decision Tree model
-dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
+# Define control for Decision Tree with cross-validation
+dt_control <- trainControl(method = "cv", number = 10)
+
+# Train the Decision Tree model with cross-validation
+dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart", trControl = dt_control)
 
 # Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
@@ -958,7 +964,7 @@ print(dt_metrics)
 
 ```
 ##    Accuracy       AUC
-## 1 0.8329031 0.6643617
+## 1 0.8382275 0.6643617
 ```
 
 # Compare Models
@@ -977,8 +983,8 @@ print(model_comparison)
 ```
 ##           Model  Accuracy       AUC
 ## 1 Random Forest 0.8437831 0.7856383
-## 2           KNN 0.8434790 0.6468085
-## 3 Decision Tree 0.8329031 0.6643617
+## 2           KNN 0.8493113 0.6468085
+## 3 Decision Tree 0.8382275 0.6643617
 ```
 
 # Identify the best model
