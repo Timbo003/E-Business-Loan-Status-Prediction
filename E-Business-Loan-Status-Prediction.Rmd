@@ -14,6 +14,7 @@ library(randomForest)
 library(e1071)
 library(pROC)
 library(rpart)
+library(ggplot2)
 ```
 
 # Load & Transform the data
@@ -484,50 +485,103 @@ X_test <- predict(preprocess, X_test)
 ### Train and Evaluate the Random Forest Model
 
 ```{r}
-rf_grid <- expand.grid(mtry = c(2, 4, 6))
-rf_control <- trainControl(method = "cv", number = 10)
-rf_model <- train(Loan_Status ~ ., data = X_train, method = "rf", 
-                  trControl = rf_control, tuneGrid = rf_grid)
+plot_roc_curve <- function(roc_obj, model_name) {
+  ggroc(roc_obj, legacy.axes = TRUE) +
+    geom_abline(linetype = "dashed", color = "gray") +
+    ggtitle(paste("ROC Curve for", model_name, "Model")) +
+    theme_minimal() +
+    xlab("False Positive Rate") +
+    ylab("True Positive Rate")
+}
+```
 
+```{r}
+# Define an expanded grid for Random Forest
+rf_grid <- expand.grid(mtry = c(2, 4, 6, 8)    # Number of variables to try at each split      
+)
+
+# Define control for Random Forest with cross-validation
+rf_control <- trainControl(method = "cv", number = 10)
+
+# Train the Random Forest model with expanded grid
+rf_model <- train(
+  Loan_Status ~ ., 
+  data = X_train, 
+  method = "rf", 
+  trControl = rf_control, 
+  tuneGrid = rf_grid
+)
+
+# Predict on the test set
 rf_predictions <- predict(rf_model, X_test)
 confusionMatrix(rf_predictions, X_test$Loan_Status)
 
+# Get probabilities for ROC curve
 rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
-rf_roc <- roc(X_test$Loan_Status, rf_probs)
-plot(rf_roc, main = "ROC Curve for Random Forest Model")
 
-rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy), 
-                         AUC = auc(rf_roc))
+# Calculate ROC curve
+rf_roc <- roc(X_test$Loan_Status, rf_probs)
+
+# Plot ROC curve
+print(plot_roc_curve(rf_roc, "Random Forest"))
+
+# Calculate and display accuracy and AUC
+rf_metrics <- data.frame(
+  Accuracy = max(rf_model$results$Accuracy), 
+  AUC = auc(rf_roc)
+)
+print(rf_metrics)
+
 ```
 
 ### Train and Evaluate the KNN Model
 
 ```{r}
+# Train the KNN model
 knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
+
+# Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
 confusionMatrix(knn_predictions, X_test$Loan_Status)
 
+# Get probabilities for ROC curve
 knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
-knn_roc <- roc(X_test$Loan_Status, knn_probs)
-plot(knn_roc, main = "ROC Curve for KNN Model")
 
+# Calculate ROC curve
+knn_roc <- roc(X_test$Loan_Status, knn_probs)
+
+# Plot ROC curve
+print(plot_roc_curve(knn_roc, "KNN"))
+
+# Calculate and display accuracy and AUC
 knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
                           AUC = auc(knn_roc))
+print(knn_metrics)
 ```
 
 ### Train and Evaluate the Decision Tree Model
 
 ```{r}
+# Train the Decision Tree model
 dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
+
+# Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
 confusionMatrix(dt_predictions, X_test$Loan_Status)
 
+# Get probabilities for ROC curve
 dt_probs <- predict(dt_model, X_test, type = "prob")[, 2]
-dt_roc <- roc(X_test$Loan_Status, dt_probs)
-plot(dt_roc, main = "ROC Curve for Decision Tree Model")
 
+# Calculate ROC curve
+dt_roc <- roc(X_test$Loan_Status, dt_probs)
+
+# Plot ROC curve
+print(plot_roc_curve(dt_roc, "Decision Tree"))
+
+# Calculate and display accuracy and AUC
 dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
                          AUC = auc(dt_roc))
+print(dt_metrics)
 ```
 
 # Compare Models

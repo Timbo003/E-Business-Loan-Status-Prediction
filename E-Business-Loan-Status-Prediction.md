@@ -7,6 +7,7 @@ output:
 
 # Load libraries
 
+
 ``` r
 library(tidyverse)
 ```
@@ -74,9 +75,11 @@ library(pROC)
 
 ``` r
 library(rpart)
+library(ggplot2)
 ```
 
 # Load & Transform the data
+
 
 ``` r
 # Load the data
@@ -95,6 +98,7 @@ rawData <- rawData %>%
 ```
 
 # Feature Engineering
+
 
 ``` r
 rawData <- rawData %>%
@@ -121,13 +125,13 @@ print(null_counts)
 ```
 
 
-
 ``` r
 # Save the data as a csv #TODO
 write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
 ```
 
 # Initial Data sighting
+
 
 ``` r
 # Plot 1: Distribution of Loan Status with customized colors
@@ -186,7 +190,493 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-5.png)<!-- -->
 
+
+# EDA
+
+``` r
+#Average Loan Amounts Requested and Granted
+
+# Plot 1: Average Loan Amount requested by Gender
+# Calculate the average loan amount by gender and remove missing values
+avg_loan_amount_gender <- rawData %>%
+  filter(!is.na(Gender) & Gender != "") %>%
+  group_by(Gender) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Create the bar plot
+ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Gender") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+# Plot 2: Average Loan Amount  granted granted by Gender
+# Calculate the average loan amount by gender and remove missing values
+avg_loan_amount_gender <- rawData %>%
+  filter(Loan_Status == "TRUE" & !is.na(Gender) & Gender != "") %>%
+  group_by(Gender) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Create the bar plot
+ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount granted by Gender") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-2.png)<!-- -->
+
+``` r
+# Plot 3: Average Loan Amount requested by Property Area
+avg_loan_amount <- rawData %>%
+  group_by(Property_Area) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Property Area") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-3.png)<!-- -->
+
+``` r
+# Plot 4: Average Loan Amount granted by Property Area
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Property_Area) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Property Area") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-4.png)<!-- -->
+
+``` r
+# Plot 5: Average Loan Amount requested by Marriage Status
+avg_loan_amount <- rawData %>%
+  group_by(Married) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Marriage Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-5.png)<!-- -->
+
+``` r
+# Plot 6: Average Loan Amount granted by Marriage Status
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Married) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Marriage Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-6.png)<!-- -->
+
+``` r
+# Plot 7: Average Loan Amount requested by Education Status
+avg_loan_amount <- rawData %>%
+  group_by(Education) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Education, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Education Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-7.png)<!-- -->
+
+``` r
+# Plot 8: Average Loan Amount granted by Education Status
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Education) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Education, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Education Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-8.png)<!-- -->
+
+``` r
+# Plot 9: Average Loan Amount requested by Self_Employed Status
+avg_loan_amount <- rawData %>%
+  group_by(Self_Employed) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Self_Employed, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Self_Employed Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-9.png)<!-- -->
+
+``` r
+# Plot 10: Average Loan Amount granted by Self_Employed Status
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Self_Employed) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Self_Employed, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Self_Employed Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-10.png)<!-- -->
+
+``` r
+# Plot 11: Average Loan Amount requested by Number of Dependents
+avg_loan_amount <- rawData %>%
+  group_by(Dependents) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Dependents, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Number of Dependents") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-11.png)<!-- -->
+
+``` r
+# Plot 12: Average Loan Amount granted by Number of Dependents
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Dependents) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Dependents, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Number of Dependents") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-12.png)<!-- -->
+
+``` r
+# Plot 13: Average loan amount requested by Applicant Income
+avg_loan_requested <- rawData %>%
+  group_by(ApplicantIncome) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount requested with a trend line
+ggplot(avg_loan_requested, aes(x = ApplicantIncome, y = LoanAmount)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  ggtitle("Average Loan Amount Requested by Applicant Income") +
+  xlab("Applicant Income") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-13.png)<!-- -->
+
+``` r
+# Plot 14: Average loan amount granted by Applicant Income (Loan_Status == TRUE)
+avg_loan_granted <- rawData %>%
+  filter(Loan_Status == TRUE) %>%
+  group_by(ApplicantIncome) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount granted with a trend line
+ggplot(avg_loan_granted, aes(x = ApplicantIncome, y = LoanAmount)) +
+  geom_line(color = "green") +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  ggtitle("Average Loan Amount Granted by Applicant Income") +
+  xlab("Applicant Income") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-14.png)<!-- -->
+
+``` r
+# Plot 15: Average loan amount requested by Coapplicant Income
+avg_loan_requested <- rawData %>%
+  group_by(CoapplicantIncome) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount requested with a trend line
+ggplot(avg_loan_requested, aes(x = CoapplicantIncome, y = LoanAmount)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  ggtitle("Average Loan Amount Requested by Coapplicant Income") +
+  xlab("Coapplicant Income") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-15.png)<!-- -->
+
+``` r
+# Plot 16: Average loan amount granted by Coapplicant Income (Loan_Status == TRUE)
+avg_loan_granted <- rawData %>%
+  filter(Loan_Status == TRUE) %>%
+  group_by(CoapplicantIncome) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount granted with a trend line
+ggplot(avg_loan_granted, aes(x = CoapplicantIncome, y = LoanAmount)) +
+  geom_line(color = "green") +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  ggtitle("Average Loan Amount Granted by Coapplicant Income") +
+  xlab("Coapplicant Income") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-16.png)<!-- -->
+
+``` r
+# Plot 17: Average loan amount requested by Total_Income
+avg_loan_requested <- rawData %>%
+  group_by(Total_Income) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount requested with a trend line
+ggplot(avg_loan_requested, aes(x = Total_Income, y = LoanAmount)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  ggtitle("Average Loan Amount Requested by Total_Income") +
+  xlab("TotalIncome") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-17.png)<!-- -->
+
+``` r
+# Plot 18: Average loan amount granted by Total_Income (Loan_Status == TRUE)
+avg_loan_granted <- rawData %>%
+  filter(Loan_Status == TRUE) %>%
+  group_by(Total_Income) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount granted with a trend line
+ggplot(avg_loan_granted, aes(x = Total_Income, y = LoanAmount)) +
+  geom_line(color = "green") +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  ggtitle("Average Loan Amount Granted by Toal_Income") +
+  xlab("Total_Income") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-18.png)<!-- -->
+
+``` r
+# Plot 19: Average loan amount requested by Income_to_Loan
+avg_loan_requested <- rawData %>%
+  group_by(Income_to_Loan) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount requested with a trend line
+ggplot(avg_loan_requested, aes(x = Income_to_Loan, y = LoanAmount)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  ggtitle("Average Loan Amount Requested by Total_Income") +
+  xlab("Income_to_Loan") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-19.png)<!-- -->
+
+``` r
+# Plot 20: Average loan amount granted by Income_to_Loan (Loan_Status == TRUE)
+avg_loan_granted <- rawData %>%
+  filter(Loan_Status == TRUE) %>%
+  group_by(Income_to_Loan) %>%
+  summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
+
+# Plotting average loan amount granted with a trend line
+ggplot(avg_loan_granted, aes(x = Income_to_Loan, y = LoanAmount)) +
+  geom_line(color = "green") +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  ggtitle("Average Loan Amount Granted by Income_to_Loan") +
+  xlab("Income_to_Loan") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-20.png)<!-- -->
+
+``` r
+# Plot 21: Average Loan Amount requested by Credit_History
+avg_loan_amount <- rawData %>%
+  group_by(Credit_History) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Credit_History") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-21.png)<!-- -->
+
+``` r
+# Plot 22: Average Loan Amount granted by Credit_History
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Credit_History) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Credit_History") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-22.png)<!-- -->
+
+``` r
+# Plot 23: Average Loan Amount requested by Loan_Amount_Term
+avg_loan_amount <- rawData %>%
+  group_by(Loan_Amount_Term) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Loan_Amount_Term") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-23.png)<!-- -->
+
+``` r
+# Plot 24: Average Loan Amount granted by Loan_Amount_Term
+avg_loan_amount <- rawData %>%
+  filter(Loan_Status == "TRUE") %>%
+  group_by(Loan_Amount_Term) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) + #Add labels above bars
+  ggtitle("Average Loan Amount granted by Loan_Amount_Term") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-24.png)<!-- -->
+
+``` r
+# Plot 25: Average Loan Amount requested by Loan_Status
+avg_loan_amount <- rawData %>%
+  group_by(Loan_Status) %>%
+  summarize(LoanAmount = mean(LoanAmount))
+
+ggplot(avg_loan_amount, aes(x = Loan_Status, y = LoanAmount)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(LoanAmount, 2)), vjust = -0.5) +  # Add labels above bars
+  ggtitle("Average Loan Amount requested by Loan_Status") +
+  ylab("Average Loan Amount") +
+  theme_minimal()
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-25.png)<!-- -->
+
 # Model Training
+
 
 ``` r
 # Split Data into Training and Testing Sets
@@ -215,12 +705,37 @@ X_test <- predict(preprocess, X_test)
 
 ### Train and Evaluate the Random Forest Model
 
-``` r
-rf_grid <- expand.grid(mtry = c(2, 4, 6))
-rf_control <- trainControl(method = "cv", number = 10)
-rf_model <- train(Loan_Status ~ ., data = X_train, method = "rf", 
-                  trControl = rf_control, tuneGrid = rf_grid)
 
+``` r
+plot_roc_curve <- function(roc_obj, model_name) {
+  ggroc(roc_obj, legacy.axes = TRUE) +
+    geom_abline(linetype = "dashed", color = "gray") +
+    ggtitle(paste("ROC Curve for", model_name, "Model")) +
+    theme_minimal() +
+    xlab("False Positive Rate") +
+    ylab("True Positive Rate")
+}
+```
+
+
+``` r
+# Define an expanded grid for Random Forest
+rf_grid <- expand.grid(mtry = c(2, 4, 6, 8)    # Number of variables to try at each split      
+)
+
+# Define control for Random Forest with cross-validation
+rf_control <- trainControl(method = "cv", number = 10)
+
+# Train the Random Forest model with expanded grid
+rf_model <- train(
+  Loan_Status ~ ., 
+  data = X_train, 
+  method = "rf", 
+  trControl = rf_control, 
+  tuneGrid = rf_grid
+)
+
+# Predict on the test set
 rf_predictions <- predict(rf_model, X_test)
 confusionMatrix(rf_predictions, X_test$Loan_Status)
 ```
@@ -230,33 +745,36 @@ confusionMatrix(rf_predictions, X_test$Loan_Status)
 ## 
 ##           Reference
 ## Prediction FALSE TRUE
-##      FALSE     8    2
-##      TRUE     12   45
+##      FALSE     8    1
+##      TRUE     12   46
 ##                                           
-##                Accuracy : 0.791           
-##                  95% CI : (0.6743, 0.8808)
+##                Accuracy : 0.806           
+##                  95% CI : (0.6911, 0.8924)
 ##     No Information Rate : 0.7015          
-##     P-Value [Acc > NIR] : 0.06760         
+##     P-Value [Acc > NIR] : 0.037459        
 ##                                           
-##                   Kappa : 0.4174          
+##                   Kappa : 0.4498          
 ##                                           
-##  Mcnemar's Test P-Value : 0.01616         
+##  Mcnemar's Test P-Value : 0.005546        
 ##                                           
 ##             Sensitivity : 0.4000          
-##             Specificity : 0.9574          
-##          Pos Pred Value : 0.8000          
-##          Neg Pred Value : 0.7895          
+##             Specificity : 0.9787          
+##          Pos Pred Value : 0.8889          
+##          Neg Pred Value : 0.7931          
 ##              Prevalence : 0.2985          
 ##          Detection Rate : 0.1194          
-##    Detection Prevalence : 0.1493          
-##       Balanced Accuracy : 0.6787          
+##    Detection Prevalence : 0.1343          
+##       Balanced Accuracy : 0.6894          
 ##                                           
 ##        'Positive' Class : FALSE           
 ## 
 ```
 
 ``` r
+# Get probabilities for ROC curve
 rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
+
+# Calculate ROC curve
 rf_roc <- roc(X_test$Loan_Status, rf_probs)
 ```
 
@@ -269,20 +787,34 @@ rf_roc <- roc(X_test$Loan_Status, rf_probs)
 ```
 
 ``` r
-plot(rf_roc, main = "ROC Curve for Random Forest Model")
+# Plot ROC curve
+print(plot_roc_curve(rf_roc, "Random Forest"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
-rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy), 
-                         AUC = auc(rf_roc))
+# Calculate and display accuracy and AUC
+rf_metrics <- data.frame(
+  Accuracy = max(rf_model$results$Accuracy), 
+  AUC = auc(rf_roc)
+)
+print(rf_metrics)
+```
+
+```
+##    Accuracy       AUC
+## 1 0.8437831 0.7856383
 ```
 
 ### Train and Evaluate the KNN Model
 
+
 ``` r
+# Train the KNN model
 knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5)
+
+# Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
 confusionMatrix(knn_predictions, X_test$Loan_Status)
 ```
@@ -318,7 +850,10 @@ confusionMatrix(knn_predictions, X_test$Loan_Status)
 ```
 
 ``` r
+# Get probabilities for ROC curve
 knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
+
+# Calculate ROC curve
 knn_roc <- roc(X_test$Loan_Status, knn_probs)
 ```
 
@@ -331,20 +866,32 @@ knn_roc <- roc(X_test$Loan_Status, knn_probs)
 ```
 
 ``` r
-plot(knn_roc, main = "ROC Curve for KNN Model")
+# Plot ROC curve
+print(plot_roc_curve(knn_roc, "KNN"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
+# Calculate and display accuracy and AUC
 knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
                           AUC = auc(knn_roc))
+print(knn_metrics)
+```
+
+```
+##   Accuracy       AUC
+## 1 0.843479 0.6468085
 ```
 
 ### Train and Evaluate the Decision Tree Model
 
+
 ``` r
+# Train the Decision Tree model
 dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart")
+
+# Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
 confusionMatrix(dt_predictions, X_test$Loan_Status)
 ```
@@ -380,7 +927,10 @@ confusionMatrix(dt_predictions, X_test$Loan_Status)
 ```
 
 ``` r
+# Get probabilities for ROC curve
 dt_probs <- predict(dt_model, X_test, type = "prob")[, 2]
+
+# Calculate ROC curve
 dt_roc <- roc(X_test$Loan_Status, dt_probs)
 ```
 
@@ -393,17 +943,26 @@ dt_roc <- roc(X_test$Loan_Status, dt_probs)
 ```
 
 ``` r
-plot(dt_roc, main = "ROC Curve for Decision Tree Model")
+# Plot ROC curve
+print(plot_roc_curve(dt_roc, "Decision Tree"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
+# Calculate and display accuracy and AUC
 dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
                          AUC = auc(dt_roc))
+print(dt_metrics)
+```
+
+```
+##    Accuracy       AUC
+## 1 0.8329031 0.6643617
 ```
 
 # Compare Models
+
 
 ``` r
 model_comparison <- data.frame(
@@ -417,12 +976,13 @@ print(model_comparison)
 
 ```
 ##           Model  Accuracy       AUC
-## 1 Random Forest 0.8473545 0.7882979
-## 2           KNN 0.8402217 0.6803191
-## 3 Decision Tree 0.8370872 0.6643617
+## 1 Random Forest 0.8437831 0.7856383
+## 2           KNN 0.8434790 0.6468085
+## 3 Decision Tree 0.8329031 0.6643617
 ```
 
 # Identify the best model
+
 
 ``` r
 best_model_name <- model_comparison[which.max(model_comparison$AUC), "Model"]
@@ -443,4 +1003,4 @@ if (best_model_name == "Random Forest") {
 }
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
