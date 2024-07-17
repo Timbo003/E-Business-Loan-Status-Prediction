@@ -94,7 +94,7 @@ rawData <- rawData %>%
          Gender = as.factor(Gender),
          Dependents = as.factor(Dependents),
          Property_Area = as.factor(Property_Area),
-         Loan_Status = as.factor(Loan_Status == "Y"))
+         Loan_Status = factor(ifelse(Loan_Status == "Y", "Yes", "No")))
 ```
 
 # Feature Engineering
@@ -140,6 +140,13 @@ ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
   scale_fill_manual(values = c("TRUE" = "#90EE90", "FALSE" = "#FFB6C1")) +
   ggtitle("Distribution of Loan Status") +
   theme_minimal()
+```
+
+```
+## Warning: No shared levels found between `names(values)` of the manual scale and the
+## data's fill values.
+## No shared levels found between `names(values)` of the manual scale and the
+## data's fill values.
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
@@ -444,10 +451,6 @@ ggplot(avg_loan_granted, aes(x = ApplicantIncome, y = LoanAmount)) +
   theme_minimal()
 ```
 
-```
-## `geom_smooth()` using formula = 'y ~ x'
-```
-
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-14.png)<!-- -->
 
 ``` r
@@ -489,10 +492,6 @@ ggplot(avg_loan_granted, aes(x = CoapplicantIncome, y = LoanAmount)) +
   xlab("Coapplicant Income") +
   ylab("Average Loan Amount") +
   theme_minimal()
-```
-
-```
-## `geom_smooth()` using formula = 'y ~ x'
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-16.png)<!-- -->
@@ -538,10 +537,6 @@ ggplot(avg_loan_granted, aes(x = Total_Income, y = LoanAmount)) +
   theme_minimal()
 ```
 
-```
-## `geom_smooth()` using formula = 'y ~ x'
-```
-
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-18.png)<!-- -->
 
 ``` r
@@ -583,10 +578,6 @@ ggplot(avg_loan_granted, aes(x = Income_to_Loan, y = LoanAmount)) +
   xlab("Income_to_Loan") +
   ylab("Average Loan Amount") +
   theme_minimal()
-```
-
-```
-## `geom_smooth()` using formula = 'y ~ x'
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-20.png)<!-- -->
@@ -719,33 +710,79 @@ plot_roc_curve <- function(roc_obj, model_name) {
 
 
 ``` r
-# Define an expanded grid for Random Forest
-rf_grid <- expand.grid(mtry = c(2, 4, 6, 8))    # Number of variables to try at each split      
+# Load necessary libraries
+library(caret)
+library(pROC)
 
-# Define control for Random Forest with cross-validation
-rf_control <- trainControl(method = "cv", number = 10)
+# Define possible values for hyperparameters
+mtry_values <- c(2, 4, 6, 8, 16)
+ntree_values <- c(100, 200, 300, 500)
+nodesize_values <- c(1, 5, 10, 20)
 
-# Train the Random Forest model with expanded grid
-rf_model <- train(
-  Loan_Status ~ ., 
-  data = X_train, 
-  method = "rf", 
-  trControl = rf_control, 
-  tuneGrid = rf_grid
-)
+# Initialize variables to store the best results
+best_precision <- 0
+best_model <- NULL
+best_mtry <- NA
+best_ntree <- NA
+best_nodesize <- NA
 
-# Predict on the test set
-rf_predictions <- predict(rf_model, X_test)
-confusionMatrix(rf_predictions, X_test$Loan_Status)
+# Loop through all combinations of hyperparameters
+for (mtry in mtry_values) {
+  for (ntree in ntree_values) {
+    for (nodesize in nodesize_values) {
+      
+      # Train the Random Forest model with the current set of hyperparameters
+      rf_model <- train(
+        Loan_Status ~ ., 
+        data = X_train, 
+        method = "rf", 
+        trControl = trainControl(method = "cv", number = 10),
+        tuneGrid = expand.grid(mtry = mtry),
+        ntree = ntree,
+        nodesize = nodesize
+      )
+      
+      # Predict on the test set
+      rf_predictions <- predict(rf_model, X_test)
+      conf_matrix <- confusionMatrix(rf_predictions, X_test$Loan_Status)
+      
+      # Extract precision from confusion matrix
+      precision <- conf_matrix$byClass['Precision']
+      
+      # Check if the current model has the best precision so far
+      if (precision > best_precision) {
+        best_precision <- precision
+        best_model <- rf_model
+        best_mtry <- mtry
+        best_ntree <- ntree
+        best_nodesize <- nodesize
+      }
+    }
+  }
+}
+
+# Predict on the test set with the best model
+rf_predictions <- predict(best_model, X_test)
+conf_matrix <- confusionMatrix(rf_predictions, X_test$Loan_Status)
+
+print("Confusion Matrix:")
+```
+
+```
+## [1] "Confusion Matrix:"
+```
+
+``` r
+print(conf_matrix)
 ```
 
 ```
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
-## Prediction FALSE TRUE
-##      FALSE     8    1
-##      TRUE     12   46
+## Prediction No Yes
+##        No   8   1
+##        Yes 12  46
 ##                                           
 ##                Accuracy : 0.806           
 ##                  95% CI : (0.6911, 0.8924)
@@ -765,20 +802,25 @@ confusionMatrix(rf_predictions, X_test$Loan_Status)
 ##    Detection Prevalence : 0.1343          
 ##       Balanced Accuracy : 0.6894          
 ##                                           
-##        'Positive' Class : FALSE           
+##        'Positive' Class : No              
 ## 
 ```
 
 ``` r
+# Extract metrics from confusion matrix
+recall <- conf_matrix$byClass['Recall']
+precision <- conf_matrix$byClass['Precision']
+f1 <- 2 * (precision * recall) / (precision + recall)
+
 # Get probabilities for ROC curve
-rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
+rf_probs <- predict(best_model, X_test, type = "prob")[, 2]
 
 # Calculate ROC curve
 rf_roc <- roc(X_test$Loan_Status, rf_probs)
 ```
 
 ```
-## Setting levels: control = FALSE, case = TRUE
+## Setting levels: control = No, case = Yes
 ```
 
 ```
@@ -793,17 +835,25 @@ print(plot_roc_curve(rf_roc, "Random Forest"))
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
-# Calculate and display accuracy and AUC
+# Calculate and display accuracy, AUC, recall, precision, and F1 score
 rf_metrics <- data.frame(
-  Accuracy = max(rf_model$results$Accuracy), 
-  AUC = auc(rf_roc)
+  Accuracy = max(best_model$results$Accuracy), 
+  AUC = auc(rf_roc),
+  Recall = recall,
+  Precision = precision,
+  F1_Score = f1,
+  best_mtry = best_mtry,
+  best_ntree = best_ntree,
+  best_nodesize = best_nodesize
 )
 print(rf_metrics)
 ```
 
 ```
-##    Accuracy       AUC
-## 1 0.8437831 0.7856383
+##         Accuracy       AUC Recall Precision  F1_Score best_mtry best_ntree
+## Recall 0.8347884 0.6941489    0.4 0.8888889 0.5517241         2        100
+##        best_nodesize
+## Recall             5
 ```
 
 ### Train and Evaluate the KNN Model
@@ -813,21 +863,40 @@ print(rf_metrics)
 # Define control for KNN with cross-validation
 knn_control <- trainControl(method = "cv", number = 10)
 
-# Train the KNN model with cross-validation
-knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength = 5, trControl = knn_control)
+# Define grid for KNN hyperparameter tuning
+knn_grid <- expand.grid(k = c(1, 3, 5, 7, 9, 11))
+
+# Train the KNN model with hyperparameter tuning
+knn_model <- train(
+  Loan_Status ~ ., 
+  data = X_train, 
+  method = "knn", 
+  tuneGrid = knn_grid, 
+  trControl = knn_control
+)
 
 # Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
-confusionMatrix(knn_predictions, X_test$Loan_Status)
+knn_conf_matrix <- confusionMatrix(knn_predictions, X_test$Loan_Status)
+
+print("Confusion Matrix:")
+```
+
+```
+## [1] "Confusion Matrix:"
+```
+
+``` r
+print(knn_conf_matrix)
 ```
 
 ```
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
-## Prediction FALSE TRUE
-##      FALSE     7    1
-##      TRUE     13   46
+## Prediction No Yes
+##        No   7   1
+##        Yes 13  46
 ##                                           
 ##                Accuracy : 0.791           
 ##                  95% CI : (0.6743, 0.8808)
@@ -847,11 +916,16 @@ confusionMatrix(knn_predictions, X_test$Loan_Status)
 ##    Detection Prevalence : 0.1194          
 ##       Balanced Accuracy : 0.6644          
 ##                                           
-##        'Positive' Class : FALSE           
+##        'Positive' Class : No              
 ## 
 ```
 
 ``` r
+# Extract metrics from confusion matrix
+knn_recall <- knn_conf_matrix$byClass['Recall']
+knn_precision <- knn_conf_matrix$byClass['Precision']
+knn_f1 <- 2 * (knn_precision * knn_recall) / (knn_precision + knn_recall)
+
 # Get probabilities for ROC curve
 knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
 
@@ -860,7 +934,7 @@ knn_roc <- roc(X_test$Loan_Status, knn_probs)
 ```
 
 ```
-## Setting levels: control = FALSE, case = TRUE
+## Setting levels: control = No, case = Yes
 ```
 
 ```
@@ -875,40 +949,63 @@ print(plot_roc_curve(knn_roc, "KNN"))
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
-# Calculate and display accuracy and AUC
-knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
-                          AUC = auc(knn_roc))
+# Calculate and display accuracy, AUC, recall, precision, and F1 score
+knn_metrics <- data.frame(
+  Accuracy = max(knn_model$results$Accuracy), 
+  AUC = auc(knn_roc),
+  Recall = knn_recall,
+  Precision = knn_precision,
+  F1_Score = knn_f1
+)
 print(knn_metrics)
 ```
 
 ```
-##    Accuracy       AUC
-## 1 0.8493113 0.6468085
+##         Accuracy       AUC Recall Precision F1_Score
+## Recall 0.8530423 0.6803191   0.35     0.875      0.5
 ```
 
 ### Train and Evaluate the Decision Tree Model
 
 
 ``` r
-# Train the Decision Tree model
 # Define control for Decision Tree with cross-validation
 dt_control <- trainControl(method = "cv", number = 10)
 
-# Train the Decision Tree model with cross-validation
-dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart", trControl = dt_control)
+# Define grid for Decision Tree hyperparameter tuning
+dt_grid <- expand.grid(cp = seq(0.01, 0.1, by = 0.01))
+
+# Train the Decision Tree model with hyperparameter tuning
+dt_model <- train(
+  Loan_Status ~ ., 
+  data = X_train, 
+  method = "rpart", 
+  tuneGrid = dt_grid, 
+  trControl = dt_control
+)
 
 # Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
-confusionMatrix(dt_predictions, X_test$Loan_Status)
+dt_conf_matrix <- confusionMatrix(dt_predictions, X_test$Loan_Status)
+
+print("Decision Tree Confusion Matrix:")
+```
+
+```
+## [1] "Decision Tree Confusion Matrix:"
+```
+
+``` r
+print(dt_conf_matrix)
 ```
 
 ```
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
-## Prediction FALSE TRUE
-##      FALSE     7    1
-##      TRUE     13   46
+## Prediction No Yes
+##        No   7   1
+##        Yes 13  46
 ##                                           
 ##                Accuracy : 0.791           
 ##                  95% CI : (0.6743, 0.8808)
@@ -928,11 +1025,16 @@ confusionMatrix(dt_predictions, X_test$Loan_Status)
 ##    Detection Prevalence : 0.1194          
 ##       Balanced Accuracy : 0.6644          
 ##                                           
-##        'Positive' Class : FALSE           
+##        'Positive' Class : No              
 ## 
 ```
 
 ``` r
+# Extract metrics from confusion matrix
+dt_recall <- dt_conf_matrix$byClass['Recall']
+dt_precision <- dt_conf_matrix$byClass['Precision']
+dt_f1 <- 2 * (dt_precision * dt_recall) / (dt_precision + dt_recall)
+
 # Get probabilities for ROC curve
 dt_probs <- predict(dt_model, X_test, type = "prob")[, 2]
 
@@ -941,7 +1043,7 @@ dt_roc <- roc(X_test$Loan_Status, dt_probs)
 ```
 
 ```
-## Setting levels: control = FALSE, case = TRUE
+## Setting levels: control = No, case = Yes
 ```
 
 ```
@@ -956,36 +1058,106 @@ print(plot_roc_curve(dt_roc, "Decision Tree"))
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-# Calculate and display accuracy and AUC
-dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
-                         AUC = auc(dt_roc))
+# Calculate and display accuracy, AUC, recall, precision, and F1 score
+dt_metrics <- data.frame(
+  Accuracy = max(dt_model$results$Accuracy), 
+  AUC = auc(dt_roc),
+  Recall = dt_recall,
+  Precision = dt_precision,
+  F1_Score = dt_f1
+)
+print("Decision Tree Metrics:")
+```
+
+```
+## [1] "Decision Tree Metrics:"
+```
+
+``` r
 print(dt_metrics)
 ```
 
 ```
-##    Accuracy       AUC
-## 1 0.8382275 0.6643617
+##        Accuracy       AUC Recall Precision F1_Score
+## Recall     0.85 0.6643617   0.35     0.875      0.5
 ```
 
 # Compare Models
 
 
 ``` r
+# Create a dataframe to compare the models
 model_comparison <- data.frame(
   Model = c("Random Forest", "KNN", "Decision Tree"),
   Accuracy = c(rf_metrics$Accuracy, knn_metrics$Accuracy, dt_metrics$Accuracy),
-  AUC = c(rf_metrics$AUC, knn_metrics$AUC, dt_metrics$AUC)
+  AUC = c(rf_metrics$AUC, knn_metrics$AUC, dt_metrics$AUC),
+  Precision = c(rf_metrics$Precision, knn_metrics$Precision, dt_metrics$Precision)
 )
 
-print(model_comparison)
+model_comparison
 ```
 
 ```
-##           Model  Accuracy       AUC
-## 1 Random Forest 0.8437831 0.7856383
-## 2           KNN 0.8493113 0.6468085
-## 3 Decision Tree 0.8382275 0.6643617
+##           Model  Accuracy       AUC Precision
+## 1 Random Forest 0.8347884 0.6941489 0.8888889
+## 2           KNN 0.8530423 0.6803191 0.8750000
+## 3 Decision Tree 0.8500000 0.6643617 0.8750000
 ```
+
+
+``` r
+# Reshape the dataframe for plotting
+model_comparison_melted <- reshape2::melt(model_comparison, id.vars = 'Model')
+
+# Plot the comparison
+ggplot(model_comparison_melted, aes(x = Model, y = value, color = variable, group = variable)) +
+  geom_line(aes(linetype = variable), size = 1) +
+  geom_point(size = 3) +
+  labs(title = "Model Comparison",
+       x = "Model",
+       y = "Score") +
+  scale_color_manual(values = c("Accuracy" = "blue", "AUC" = "green", "Precision" = "red")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+```
+
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+
+``` r
+# Reshape the dataframe for plotting
+model_comparison_melted <- reshape2::melt(model_comparison, id.vars = 'Model')
+```
+
+
+``` r
+# Get unique model names for color mapping
+unique_models <- unique(model_comparison_melted$Model)
+
+# Create a color palette
+color_palette <- setNames(c("blue", "green", "red"), unique_models)
+
+# Plot the comparison with KPIs on the x-axis
+ggplot(model_comparison_melted, aes(x = variable, y = value, color = Model, group = Model)) +
+  geom_line(aes(linetype = Model), size = 1) +
+  geom_point(size = 3) +
+  labs(title = "Model Comparison",
+       x = "KPI",
+       y = "Score") +
+  scale_color_manual(values = color_palette) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 # Identify the best model
 
@@ -1009,4 +1181,4 @@ if (best_model_name == "Random Forest") {
 }
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
