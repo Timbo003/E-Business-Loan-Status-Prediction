@@ -269,7 +269,7 @@ avg_loan_granted <- rawData %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
 # Plotting average loan amount granted with a trend line
-ggplot(avg_loan_granted, aes(x = CoapplicantIncome, y = LoanAmount)) +
+ggplot(avg_loan_granted, aes(x = ApplicantIncome, y = LoanAmount)) +
   geom_line(color = "green") +
   geom_point(color = "green") +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
@@ -311,16 +311,16 @@ ggplot(avg_loan_granted, aes(x = CoapplicantIncome, y = LoanAmount)) +
 
 # Plot 17: Average loan amount requested by Total_Income
 avg_loan_requested <- rawData %>%
-  group_by(Toal_Income) %>%
+  group_by(Total_Income) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
 # Plotting average loan amount requested with a trend line
-ggplot(avg_loan_requested, aes(x = Toal_Income, y = LoanAmount)) +
+ggplot(avg_loan_requested, aes(x = Total_Income, y = LoanAmount)) +
   geom_line() +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   ggtitle("Average Loan Amount Requested by Total_Income") +
-  xlab("Applicant TotalIncome") +
+  xlab("TotalIncome") +
   ylab("Average Loan Amount") +
   theme_minimal()
 
@@ -331,12 +331,12 @@ avg_loan_granted <- rawData %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
 # Plotting average loan amount granted with a trend line
-ggplot(avg_loan_granted, aes(x = ApplicantIncome, y = LoanAmount)) +
+ggplot(avg_loan_granted, aes(x = Total_Income, y = LoanAmount)) +
   geom_line(color = "green") +
   geom_point(color = "green") +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
-  ggtitle("Average Loan Amount Granted by Toal_Income")
-  xlab("Applicant TotalIncome") +
+  ggtitle("Average Loan Amount Granted by Toal_Income") +
+  xlab("Total_Income") +
   ylab("Average Loan Amount") +
   theme_minimal()
 
@@ -367,8 +367,8 @@ ggplot(avg_loan_granted, aes(x = Income_to_Loan, y = LoanAmount)) +
   geom_line(color = "green") +
   geom_point(color = "green") +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
-  ggtitle("Average Loan Amount Granted by Income_to_Loan")
-  xlab("AIncome_to_Loan") +
+  ggtitle("Average Loan Amount Granted by Income_to_Loan") +
+  xlab("Income_to_Loan") +
   ylab("Average Loan Amount") +
   theme_minimal()
 
