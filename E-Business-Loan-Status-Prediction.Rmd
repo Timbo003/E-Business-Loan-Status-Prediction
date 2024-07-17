@@ -14,6 +14,7 @@ library(randomForest)
 library(e1071)
 library(pROC)
 library(rpart)
+library(ROCR)
 ```
 
 # Load & Transform the data
@@ -482,26 +483,18 @@ rf_model <- train(Loan_Status ~ ., data = X_train, method = "rf",
 rf_predictions <- predict(rf_model, X_test)
 confusionMatrix(rf_predictions, X_test$Loan_Status)
 
-rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
-rf_roc <- roc(X_test$Loan_Status, rf_probs)
-plot(rf_roc, main = "ROC Curve for Random Forest Model")
+# Generate ROC and AUC
+rocr_rf_pred <- prediction(rf_predictions, X_test$Loan_Status)
+rf_performance <- performance(rocr_rf_pred, "tpr", "fpr")
+plot(rf_performance, colorize = TRUE, main = "ROC Curve for Random Forest Model")
+abline(0, 1)
 
-rf_metrics <- data.frame(Accuracy = max(rf_model$results$Accuracy), 
-                         AUC = auc(rf_roc))
+# Calculate AUC
+rf_auc <- performance(rocr_rf_pred, "auc")
+rf_auc_value <- as.numeric(rf_auc@y.values)
 
-# #Predicting for the testset 
-# predTest = predict(mod, newdata=churn.test, type="response")
-# 
-# #ROC AND AUC
-# rocr.log.pred <- prediction(predTest, churn.test$Churn)
-# logPerformance <- performance(rocr.log.pred, "tpr", "fpr")
-# plot(logPerformance, colorize = TRUE)
-# abline(0, 1)
-# logAuc<-performance(rocr.log.pred,"auc")
-# logAuc@y.values
-# as.numeric(performance(rocr.log.pred, "auc")@y.values)
-# 
-# summary(mod)
+# Output AUC value
+rf_auc_value
 ```
 
 ### Train and Evaluate the KNN Model
@@ -511,12 +504,23 @@ knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength =
 knn_predictions <- predict(knn_model, X_test)
 confusionMatrix(knn_predictions, X_test$Loan_Status)
 
-knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
-knn_roc <- roc(X_test$Loan_Status, knn_probs)
-plot(knn_roc, main = "ROC Curve for KNN Model")
+
 
 knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
                           AUC = auc(knn_roc))
+
+# Generate ROC and AUC
+knn_probs <- prediction(knn_predictions, X_test$Loan_Status)
+rf_performance <- performance(knn_probs, "tpr", "fpr")
+plot(rf_performance, colorize = TRUE, main = "ROC Curve for KNN Model")
+abline(0, 1)
+
+# Calculate AUC
+rf_auc <- performance(knn_probs, "auc")
+rf_auc_value <- as.numeric(rf_auc@y.values)
+
+# Output AUC value
+rf_auc_value
 ```
 
 ### Train and Evaluate the Decision Tree Model
@@ -532,6 +536,19 @@ plot(dt_roc, main = "ROC Curve for Decision Tree Model")
 
 dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
                          AUC = auc(dt_roc))
+
+# Generate ROC and AUC
+dt_probs <- prediction(dt_predictions, X_test$Loan_Status)
+rf_performance <- performance(dt_probs, "tpr", "fpr")
+plot(rf_performance, colorize = TRUE, main = "ROC Curve for Decision Tree")
+abline(0, 1)
+
+# Calculate AUC
+rf_auc <- performance(dt_probs, "auc")
+rf_auc_value <- as.numeric(rf_auc@y.values)
+
+# Output AUC value
+rf_auc_value
 ```
 
 # Compare Models
