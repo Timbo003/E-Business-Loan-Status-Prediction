@@ -653,59 +653,78 @@ if (best_model_name == "Random Forest") {
 # Best Model With CostMatrix and Recall Training
 ```{r}
 library(caret)
-library(randomForest)
 library(pROC)
 
-# Define control for Random Forest with cross-validation
-rf_control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
-
-# Assign higher weight to the "No" class to penalize false positives more heavily
-class_weights <- c("No" = 1, "Yes" = 100000)
-
-# Define a custom training function for Random Forest to incorporate class weights
-train_rf_with_weights <- function(train_data, train_labels, mtry) {
-  randomForest(
-    x = train_data,
-    y = train_labels,
-    mtry = mtry,
-    classwt = class_weights
-  )
+# Define a custom summary function to include a cost matrix
+custom_summary <- function(data, lev = NULL, model = NULL) {
+  confusion <- confusionMatrix(data$pred, data$obs)
+  
+  # Extract counts for the confusion matrix
+  tn <- confusion$table[1, 1]
+  fp <- confusion$table[1, 2]
+  fn <- confusion$table[2, 1]
+  tp <- confusion$table[2, 2]
+  
+  # Define the cost matrix
+  cost_matrix <- matrix(c(0, 20, 1, 0), nrow = 2)
+  colnames(cost_matrix) <- rownames(cost_matrix) <- c("no", "yes")
+  
+  # Calculate the total cost
+  total_cost <- fp * cost_matrix["no", "yes"] + fn * cost_matrix["yes", "no"]
+  
+  # Calculate additional metrics
+  recall <- confusion$byClass['Recall']
+  precision <- confusion$byClass['Precision']
+  f1 <- 2 * (precision * recall) / (precision + recall)
+  
+  out <- c(confusion$overall, confusion$byClass, TotalCost = total_cost, F1 = f1)
+  names(out) <- c(names(confusion$overall), names(confusion$byClass), "TotalCost", "F1")
+  
+  return(out)
 }
 
-# Create a custom train function for caret to use
-rf_custom <- list(
-  type = "Classification",
-  library = "randomForest",
-  loop = NULL,
-  parameters = data.frame(parameter = "mtry", class = "numeric", label = "mtry"),
-  grid = function(x, y, len = NULL, search = "grid") {
-    expand.grid(mtry = c(2, 4, 6, 8))
-  },
-  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
-    train_rf_with_weights(x, y, param$mtry)
-  },
-  predict = function(modelFit, newdata, submodels = NULL) {
-    predict(modelFit, newdata)
-  },
-  prob = function(modelFit, newdata, submodels = NULL) {
-    predict(modelFit, newdata, type = "prob")
-  },
-  predictors = function(x, ...) {
-    colnames(x$trainingData)[colnames(x$trainingData) != ".outcome"]
-  },
-  varImp = function(object, ...) {
-    randomForest::importance(object, ...)
-  },
-  levels = function(x) x$classes
+# Define control for Random Forest with cross-validation using the custom summary function
+rf_control <- trainControl(
+  method = "cv",
+  number = 10,
+  summaryFunction = custom_summary,
+  classProbs = TRUE,
+  savePredictions = TRUE
 )
 
-# Train the Random Forest model with expanded grid
-rf_model <- train(
-  Loan_Status ~ ., 
-  data = X_train, 
-  method = rf_custom, 
-  trControl = rf_control
+# Define an expanded grid for Random Forest with additional hyperparameters
+rf_grid <- expand.grid(
+  mtry = c(2, 4, 6, 8),          # Number of variables to try at each split
+  ntree = c(100, 200, 500),      # Number of trees in the forest
+  maxnodes = c(10, 20, 30)       # Maximum number of terminal nodes trees can have
 )
+
+# Custom train function to handle additional parameters
+train_rf_model <- function(data, tuneGrid) {
+  best_model <- NULL
+  best_cost <- Inf
+  for (i in 1:nrow(tuneGrid)) {
+    params <- tuneGrid[i, ]
+    model <- train(
+      Loan_Status ~ ., 
+      data = data, 
+      method = "rf", 
+      trControl = rf_control, 
+      tuneGrid = expand.grid(mtry = params$mtry),
+      ntree = params$ntree,
+      maxnodes = params$maxnodes,
+      metric = "TotalCost" # Optimize based on the total cost
+    )
+    if (model$results$TotalCost < best_cost) {
+      best_cost <- model$results$TotalCost
+      best_model <- model
+    }
+  }
+  return(best_model)
+}
+
+# Train the Random Forest model with expanded grid
+rf_model <- train_rf_model(X_train, rf_grid)
 
 # Predict on the test set
 rf_predictions <- predict(rf_model, X_test)
@@ -726,7 +745,7 @@ rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
 rf_roc <- roc(X_test$Loan_Status, rf_probs)
 
 # Plot ROC curve
-print(plot(rf_roc, main = "Random Forest ROC Curve"))
+print(plot_roc_curve(rf_roc, "Random Forest"))
 
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
 rf_metrics <- data.frame(
@@ -737,5 +756,4 @@ rf_metrics <- data.frame(
   F1_Score = f1
 )
 print(rf_metrics)
-
 ```
