@@ -455,6 +455,101 @@ ggplot(avg_loan_amount, aes(x = Loan_Status, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
+
+############Percentage of Loans granted per feature ######
+
+# Function to create percentage plots for categorical variables
+create_percentage_plot <- function(data, x_var, plot_title) {
+  # Calculate the percentage of loans granted
+  percentage_data <- data %>%
+    group_by(.data[[x_var]]) %>%
+    summarize(Requested = n(),
+              Granted = sum(Loan_Status == TRUE)) %>%
+    mutate(Percentage = (Granted / Requested) * 100)
+  
+  ggplot(percentage_data, aes_string(x = x_var, y = "Percentage")) +
+    geom_bar(stat = "identity", fill = "blue") +
+    geom_text(aes(label = paste0(round(Percentage, 2), "%")), vjust = -0.5) +
+    ggtitle(plot_title) +
+    ylab("Percentage of Loans Granted") +
+    theme_minimal()
+}
+
+# Function to group continuous variables into sensible ranges
+group_continuous_variable <- function(data, var, breaks, labels) {
+  data %>%
+    mutate(!!var := cut(.data[[var]], breaks = breaks, labels = labels, include.lowest = TRUE))
+}
+
+# Group ApplicantIncome
+rawData <- group_continuous_variable(rawData, "ApplicantIncome", 
+                                     breaks = c(0, 2500, 5000, 7500, 10000, Inf), 
+                                     labels = c("0-2500", "2500-5000", "5000-7500", "7500-10000", ">10000"))
+
+# Group CoapplicantIncome
+rawData <- group_continuous_variable(rawData, "CoapplicantIncome", 
+                                     breaks = c(0, 1000, 2000, 3000, 4000, Inf), 
+                                     labels = c("0-1000", "1000-2000", "2000-3000", "3000-4000", ">4000"))
+
+# Group Total_Income
+rawData <- group_continuous_variable(rawData, "Total_Income", 
+                                     breaks = c(0, 3000, 6000, 9000, 12000, Inf), 
+                                     labels = c("0-3000", "3000-6000", "6000-9000", "9000-12000", ">12000"))
+
+# Group Income_to_Loan
+rawData <- group_continuous_variable(rawData, "Income_to_Loan", 
+                                     breaks = c(0, 20, 40, 60, 80, 100, Inf), 
+                                     labels = c("0-20", "20-40", "40-60", "60-80", "80-100", ">100"))
+
+# Plot percentage of loans granted by Gender
+plot1 <- create_percentage_plot(rawData, "Gender", "Percentage of Loans Granted by Gender")
+print(plot1)
+
+# Plot percentage of loans granted by Married
+plot2 <- create_percentage_plot(rawData, "Married", "Percentage of Loans Granted by Marriage Status")
+print(plot2)
+
+# Plot percentage of loans granted by Education
+plot3 <- create_percentage_plot(rawData, "Education", "Percentage of Loans Granted by Education Status")
+print(plot3)
+
+# Plot percentage of loans granted by Self_Employed
+plot4 <- create_percentage_plot(rawData, "Self_Employed", "Percentage of Loans Granted by Self_Employed Status")
+print(plot4)
+
+# Plot percentage of loans granted by Property Area
+plot5 <- create_percentage_plot(rawData, "Property_Area", "Percentage of Loans Granted by Property Area")
+print(plot5)
+
+# Plot percentage of loans granted by Dependents
+plot6 <- create_percentage_plot(rawData, "Dependents", "Percentage of Loans Granted by Number of Dependents")
+print(plot6)
+
+# Plot percentage of loans granted by Credit History
+plot7 <- create_percentage_plot(rawData, "Credit_History", "Percentage of Loans Granted by Credit History")
+print(plot7)
+
+# Plot percentage of loans granted by Loan Amount Term
+plot8 <- create_percentage_plot(rawData, "Loan_Amount_Term", "Percentage of Loans Granted by Loan Amount Term")
+print(plot8)
+
+# Plot percentage of loans granted by Applicant Income (grouped)
+plot9 <- create_percentage_plot(rawData, "ApplicantIncome", "Percentage of Loans Granted by Applicant Income")
+print(plot9)
+
+# Plot percentage of loans granted by Coapplicant Income (grouped)
+plot10 <- create_percentage_plot(rawData, "CoapplicantIncome", "Percentage of Loans Granted by Coapplicant Income")
+print(plot10)
+
+# Plot percentage of loans granted by Total Income (grouped)
+plot11 <- create_percentage_plot(rawData, "Total_Income", "Percentage of Loans Granted by Total Income")
+print(plot11)
+
+# Plot percentage of loans granted by Income to Loan (grouped)
+plot12 <- create_percentage_plot(rawData, "Income_to_Loan", "Percentage of Loans Granted by Income to Loan")
+print(plot12)
+
+
 ```
 
 # Model Training
