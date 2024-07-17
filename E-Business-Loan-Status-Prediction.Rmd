@@ -32,7 +32,7 @@ rawData <- rawData %>%
          Gender = as.factor(Gender),
          Dependents = as.factor(Dependents),
          Property_Area = as.factor(Property_Area),
-         Loan_Status = as.factor(Loan_Status == "Y"))
+         Loan_Status = factor(ifelse(Loan_Status == "Y", "Yes", "No")))
 ```
 
 # Feature Engineering
@@ -513,7 +513,15 @@ rf_model <- train(
 
 # Predict on the test set
 rf_predictions <- predict(rf_model, X_test)
-confusionMatrix(rf_predictions, X_test$Loan_Status)
+conf_matrix <- confusionMatrix(rf_predictions, X_test$Loan_Status)
+
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Extract metrics from confusion matrix
+recall <- conf_matrix$byClass['Recall']
+precision <- conf_matrix$byClass['Precision']
+f1 <- 2 * (precision * recall) / (precision + recall)
 
 # Get probabilities for ROC curve
 rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
@@ -524,10 +532,13 @@ rf_roc <- roc(X_test$Loan_Status, rf_probs)
 # Plot ROC curve
 print(plot_roc_curve(rf_roc, "Random Forest"))
 
-# Calculate and display accuracy and AUC
+# Calculate and display accuracy, AUC, recall, precision, and F1 score
 rf_metrics <- data.frame(
   Accuracy = max(rf_model$results$Accuracy), 
-  AUC = auc(rf_roc)
+  AUC = auc(rf_roc),
+  Recall = recall,
+  Precision = precision,
+  F1_Score = f1
 )
 print(rf_metrics)
 
@@ -544,7 +555,10 @@ knn_model <- train(Loan_Status ~ ., data = X_train, method = "knn", tuneLength =
 
 # Predict on the test set
 knn_predictions <- predict(knn_model, X_test)
-confusionMatrix(knn_predictions, X_test$Loan_Status)
+knn_conf_matrix <- confusionMatrix(knn_predictions, X_test$Loan_Status)
+
+# Extract recall from confusion matrix
+knn_recall <- knn_conf_matrix$byClass['Recall']
 
 # Get probabilities for ROC curve
 knn_probs <- predict(knn_model, X_test, type = "prob")[, 2]
@@ -555,17 +569,23 @@ knn_roc <- roc(X_test$Loan_Status, knn_probs)
 # Plot ROC curve
 print(plot_roc_curve(knn_roc, "KNN"))
 
-# Calculate and display accuracy and AUC
-knn_metrics <- data.frame(Accuracy = max(knn_model$results$Accuracy), 
-                          AUC = auc(knn_roc))
+# Calculate and display accuracy, AUC, and recall
+knn_metrics <- data.frame(
+  Accuracy = max(knn_model$results$Accuracy), 
+  AUC = auc(knn_roc),
+  Recall = knn_recall
+)
 print(knn_metrics)
+
 
 ```
 
 ### Train and Evaluate the Decision Tree Model
 
 ```{r}
-# Train the Decision Tree model
+library(caret)
+library(pROC)
+
 # Define control for Decision Tree with cross-validation
 dt_control <- trainControl(method = "cv", number = 10)
 
@@ -574,7 +594,10 @@ dt_model <- train(Loan_Status ~ ., data = X_train, method = "rpart", trControl =
 
 # Predict on the test set
 dt_predictions <- predict(dt_model, X_test)
-confusionMatrix(dt_predictions, X_test$Loan_Status)
+dt_conf_matrix <- confusionMatrix(dt_predictions, X_test$Loan_Status)
+
+# Extract recall from confusion matrix
+dt_recall <- dt_conf_matrix$byClass['Recall']
 
 # Get probabilities for ROC curve
 dt_probs <- predict(dt_model, X_test, type = "prob")[, 2]
@@ -585,9 +608,12 @@ dt_roc <- roc(X_test$Loan_Status, dt_probs)
 # Plot ROC curve
 print(plot_roc_curve(dt_roc, "Decision Tree"))
 
-# Calculate and display accuracy and AUC
-dt_metrics <- data.frame(Accuracy = max(dt_model$results$Accuracy), 
-                         AUC = auc(dt_roc))
+# Calculate and display accuracy, AUC, and recall
+dt_metrics <- data.frame(
+  Accuracy = max(dt_model$results$Accuracy), 
+  AUC = auc(dt_roc),
+  Recall = dt_recall
+)
 print(dt_metrics)
 
 ```
@@ -598,10 +624,14 @@ print(dt_metrics)
 model_comparison <- data.frame(
   Model = c("Random Forest", "KNN", "Decision Tree"),
   Accuracy = c(rf_metrics$Accuracy, knn_metrics$Accuracy, dt_metrics$Accuracy),
-  AUC = c(rf_metrics$AUC, knn_metrics$AUC, dt_metrics$AUC)
+  AUC = c(rf_metrics$AUC, knn_metrics$AUC, dt_metrics$AUC),
+  Recall = c(rf_metrics$Recall, knn_metrics$Recall, dt_metrics$Recall),
+  
+  
 )
 
 print(model_comparison)
+
 ```
 
 # Identify the best model
@@ -617,4 +647,95 @@ if (best_model_name == "Random Forest") {
   best_model <- dt_model$finalModel
   rpart.plot(best_model)
 }
+```
+
+
+# Best Model With CostMatrix and Recall Training
+```{r}
+library(caret)
+library(randomForest)
+library(pROC)
+
+# Define control for Random Forest with cross-validation
+rf_control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+
+# Assign higher weight to the "No" class to penalize false positives more heavily
+class_weights <- c("No" = 1, "Yes" = 100000)
+
+# Define a custom training function for Random Forest to incorporate class weights
+train_rf_with_weights <- function(train_data, train_labels, mtry) {
+  randomForest(
+    x = train_data,
+    y = train_labels,
+    mtry = mtry,
+    classwt = class_weights
+  )
+}
+
+# Create a custom train function for caret to use
+rf_custom <- list(
+  type = "Classification",
+  library = "randomForest",
+  loop = NULL,
+  parameters = data.frame(parameter = "mtry", class = "numeric", label = "mtry"),
+  grid = function(x, y, len = NULL, search = "grid") {
+    expand.grid(mtry = c(2, 4, 6, 8))
+  },
+  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
+    train_rf_with_weights(x, y, param$mtry)
+  },
+  predict = function(modelFit, newdata, submodels = NULL) {
+    predict(modelFit, newdata)
+  },
+  prob = function(modelFit, newdata, submodels = NULL) {
+    predict(modelFit, newdata, type = "prob")
+  },
+  predictors = function(x, ...) {
+    colnames(x$trainingData)[colnames(x$trainingData) != ".outcome"]
+  },
+  varImp = function(object, ...) {
+    randomForest::importance(object, ...)
+  },
+  levels = function(x) x$classes
+)
+
+# Train the Random Forest model with expanded grid
+rf_model <- train(
+  Loan_Status ~ ., 
+  data = X_train, 
+  method = rf_custom, 
+  trControl = rf_control
+)
+
+# Predict on the test set
+rf_predictions <- predict(rf_model, X_test)
+conf_matrix <- confusionMatrix(rf_predictions, X_test$Loan_Status)
+
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Extract metrics from confusion matrix
+recall <- conf_matrix$byClass['Recall']
+precision <- conf_matrix$byClass['Precision']
+f1 <- 2 * (precision * recall) / (precision + recall)
+
+# Get probabilities for ROC curve
+rf_probs <- predict(rf_model, X_test, type = "prob")[, 2]
+
+# Calculate ROC curve
+rf_roc <- roc(X_test$Loan_Status, rf_probs)
+
+# Plot ROC curve
+print(plot(rf_roc, main = "Random Forest ROC Curve"))
+
+# Calculate and display accuracy, AUC, recall, precision, and F1 score
+rf_metrics <- data.frame(
+  Accuracy = max(rf_model$results$Accuracy), 
+  AUC = auc(rf_roc),
+  Recall = recall,
+  Precision = precision,
+  F1_Score = f1
+)
+print(rf_metrics)
+
 ```
