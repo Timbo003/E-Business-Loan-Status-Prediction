@@ -400,7 +400,7 @@ ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
   theme_minimal()
 
 
-# Plot 21: Average Loan Amount requested by Loan_Amount_Term
+# Plot 23: Average Loan Amount requested by Loan_Amount_Term
 avg_loan_amount <- rawData %>%
   group_by(Loan_Amount_Term) %>%
   summarize(LoanAmount = mean(LoanAmount))
@@ -412,7 +412,7 @@ ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-# Plot 22: Average Loan Amount granted by Loan_Amount_Term
+# Plot 24: Average Loan Amount granted by Loan_Amount_Term
 avg_loan_amount <- rawData %>%
   filter(Loan_Status == "TRUE") %>%
   group_by(Loan_Amount_Term) %>%
@@ -427,7 +427,7 @@ ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
   theme_minimal()
 
 
-# Plot 21: Average Loan Amount requested by Loan_Status
+# Plot 25: Average Loan Amount requested by Loan_Status
 avg_loan_amount <- rawData %>%
   group_by(Loan_Status) %>%
   summarize(LoanAmount = mean(LoanAmount))
