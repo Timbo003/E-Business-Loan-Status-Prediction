@@ -15,6 +15,8 @@ library(e1071)
 library(pROC)
 library(rpart)
 library(ggplot2)
+library(tidyverse)
+library(corrplot)
 ```
 
 # Load & Transform the data
@@ -91,8 +93,8 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
   theme_minimal()
 ```
 
-
 # EDA
+
 ```{r}
 #Average Loan Amounts Requested and Granted
 
@@ -450,9 +452,6 @@ ggplot(avg_loan_amount, aes(x = Loan_Status, y = LoanAmount)) +
   ylab("Average Loan Amount") +
   theme_minimal()
 
-```
-
-```{r}
 
 # Function to create percentage plots for categorical variables
 create_percentage_plot <- function(data, x_var, plot_title) {
@@ -553,12 +552,11 @@ plot12 <- create_percentage_plot(rawDataForPlot, "Income_to_Loan", "Percentage o
 print(plot12)
 ```
 
-# Check for Corillation
+# Preprocessing
+
+## Check for Corillation
 
 ```{r}
-library(tidyverse)
-library(caret)
-library(corrplot)
 # Select only the numerical columns
 numerical_vars <- rawData %>% select(ApplicantIncome, CoapplicantIncome, LoanAmount, Income_to_Loan)
 
@@ -609,8 +607,7 @@ rawData <- rawData[, !(names(rawData) %in% c("Gender"))]
 
 ```
 
-
-# Model Training
+Splitting the data to a 80/20 split --\> we use CV on the 80% and validate with the 20%
 
 ```{r}
 # Split Data into Training and Testing Sets
@@ -622,11 +619,15 @@ X_train <- rawData[trainIndex,]
 X_test <- rawData[-trainIndex,]
 ```
 
+## Drop colums we dont want to train on
+
 ```{r}
 # Ensure Loan_Status is a factor
 X_train$Loan_Status <- as.factor(X_train$Loan_Status)
 X_test$Loan_Status <- as.factor(X_test$Loan_Status)
 ```
+
+## Scaling and Encoding
 
 ```{r}
 # Preprocessing
@@ -635,7 +636,9 @@ X_train <- predict(preprocess, X_train)
 X_test <- predict(preprocess, X_test)
 ```
 
-### Train and Evaluate the Random Forest Model
+# Model Training
+
+## Custom ROC plot function
 
 ```{r}
 plot_roc_curve <- function(roc_obj, model_name) {
@@ -648,11 +651,9 @@ plot_roc_curve <- function(roc_obj, model_name) {
 }
 ```
 
-```{r}
-# Load necessary libraries
-library(caret)
-library(pROC)
+## Train and Evaluate the Random Forest Model
 
+```{r}
 # Define possible values for hyperparameters
 mtry_values <- c(2, 4, 6, 8, 16)
 ntree_values <- c(100, 200, 300, 500)
@@ -736,7 +737,7 @@ print(rf_metrics)
 
 ```
 
-### Train and Evaluate the KNN Model
+## Train and Evaluate the KNN Model
 
 ```{r}
 # Define control for KNN with cross-validation
@@ -786,7 +787,7 @@ knn_metrics <- data.frame(
 print(knn_metrics)
 ```
 
-### Train and Evaluate the Decision Tree Model
+## Train and Evaluate the Decision Tree Model
 
 ```{r}
 # Define control for Decision Tree with cross-validation

@@ -397,7 +397,10 @@ library(pROC)</code></pre>
 ## 
 ##     cov, smooth, var</code></pre>
 <pre class="r"><code>library(rpart)
-library(ggplot2)</code></pre>
+library(ggplot2)
+library(tidyverse)
+library(corrplot)</code></pre>
+<pre><code>## corrplot 0.92 loaded</code></pre>
 </div>
 <div id="load-transform-the-data" class="section level1">
 <h1>Load &amp; Transform the data</h1>
@@ -941,12 +944,10 @@ plot12 &lt;- create_percentage_plot(rawDataForPlot, &quot;Income_to_Loan&quot;, 
 print(plot12)</code></pre>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
-<div id="check-for-corillation" class="section level1">
-<h1>Check for Corillation</h1>
-<pre class="r"><code>library(tidyverse)
-library(caret)
-library(corrplot)</code></pre>
-<pre><code>## corrplot 0.92 loaded</code></pre>
+<div id="preprocessing" class="section level1">
+<h1>Preprocessing</h1>
+<div id="check-for-corillation" class="section level2">
+<h2>Check for Corillation</h2>
 <pre class="r"><code># Select only the numerical columns
 numerical_vars &lt;- rawData %&gt;% select(ApplicantIncome, CoapplicantIncome, LoanAmount, Income_to_Loan)
 
@@ -1094,9 +1095,8 @@ print(chi_square_df)</code></pre>
 <pre class="r"><code># Drop a single column by name
 rawData &lt;- rawData[, !(names(rawData) %in% c(&quot;Total_Income&quot;))]
 rawData &lt;- rawData[, !(names(rawData) %in% c(&quot;Gender&quot;))]</code></pre>
-</div>
-<div id="model-training" class="section level1">
-<h1>Model Training</h1>
+<p>Splitting the data to a 80/20 split –&gt; we use CV on the 80% and
+validate with the 20%</p>
 <pre class="r"><code># Split Data into Training and Testing Sets
 set.seed(789)
 trainIndex &lt;- createDataPartition(rawData$Loan_Status, p = .8, 
@@ -1104,15 +1104,25 @@ trainIndex &lt;- createDataPartition(rawData$Loan_Status, p = .8,
                                   times = 1)
 X_train &lt;- rawData[trainIndex,]
 X_test &lt;- rawData[-trainIndex,]</code></pre>
+</div>
+<div id="drop-colums-we-dont-want-to-train-on" class="section level2">
+<h2>Drop colums we dont want to train on</h2>
 <pre class="r"><code># Ensure Loan_Status is a factor
 X_train$Loan_Status &lt;- as.factor(X_train$Loan_Status)
 X_test$Loan_Status &lt;- as.factor(X_test$Loan_Status)</code></pre>
+</div>
+<div id="scaling-and-encoding" class="section level2">
+<h2>Scaling and Encoding</h2>
 <pre class="r"><code># Preprocessing
 preprocess &lt;- preProcess(X_train, method = c(&quot;center&quot;, &quot;scale&quot;))
 X_train &lt;- predict(preprocess, X_train)
 X_test &lt;- predict(preprocess, X_test)</code></pre>
-<div id="train-and-evaluate-the-random-forest-model" class="section level3">
-<h3>Train and Evaluate the Random Forest Model</h3>
+</div>
+</div>
+<div id="model-training" class="section level1">
+<h1>Model Training</h1>
+<div id="custom-roc-plot-function" class="section level2">
+<h2>Custom ROC plot function</h2>
 <pre class="r"><code>plot_roc_curve &lt;- function(roc_obj, model_name) {
   ggroc(roc_obj, legacy.axes = TRUE) +
     geom_abline(linetype = &quot;dashed&quot;, color = &quot;gray&quot;) +
@@ -1121,11 +1131,10 @@ X_test &lt;- predict(preprocess, X_test)</code></pre>
     xlab(&quot;False Positive Rate&quot;) +
     ylab(&quot;True Positive Rate&quot;)
 }</code></pre>
-<pre class="r"><code># Load necessary libraries
-library(caret)
-library(pROC)
-
-# Define possible values for hyperparameters
+</div>
+<div id="train-and-evaluate-the-random-forest-model" class="section level2">
+<h2>Train and Evaluate the Random Forest Model</h2>
+<pre class="r"><code># Define possible values for hyperparameters
 mtry_values &lt;- c(2, 4, 6, 8, 16)
 ntree_values &lt;- c(100, 200, 300, 500)
 nodesize_values &lt;- c(1, 5, 10, 20)
@@ -1589,8 +1598,8 @@ print(rf_metrics)</code></pre>
 ##        best_nodesize
 ## Recall             5</code></pre>
 </div>
-<div id="train-and-evaluate-the-knn-model" class="section level3">
-<h3>Train and Evaluate the KNN Model</h3>
+<div id="train-and-evaluate-the-knn-model" class="section level2">
+<h2>Train and Evaluate the KNN Model</h2>
 <pre class="r"><code># Define control for KNN with cross-validation
 knn_control &lt;- trainControl(method = &quot;cv&quot;, number = 10)
 
@@ -1667,8 +1676,8 @@ print(knn_metrics)</code></pre>
 <pre><code>##         Accuracy       AUC Recall Precision F1_Score
 ## Recall 0.8428571 0.8207447   0.45       0.9      0.6</code></pre>
 </div>
-<div id="train-and-evaluate-the-decision-tree-model" class="section level3">
-<h3>Train and Evaluate the Decision Tree Model</h3>
+<div id="train-and-evaluate-the-decision-tree-model" class="section level2">
+<h2>Train and Evaluate the Decision Tree Model</h2>
 <pre class="r"><code># Define control for Decision Tree with cross-validation
 dt_control &lt;- trainControl(method = &quot;cv&quot;, number = 10)
 

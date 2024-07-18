@@ -76,6 +76,12 @@ library(pROC)
 ``` r
 library(rpart)
 library(ggplot2)
+library(tidyverse)
+library(corrplot)
+```
+
+```
+## corrplot 0.92 loaded
 ```
 
 # Load & Transform the data
@@ -184,8 +190,8 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-5.png)<!-- -->
 
-
 # EDA
+
 
 ``` r
 #Average Loan Amounts Requested and Granted
@@ -669,7 +675,6 @@ ggplot(avg_loan_amount, aes(x = Loan_Status, y = LoanAmount)) +
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-25.png)<!-- -->
 
-
 ``` r
 # Function to create percentage plots for categorical variables
 create_percentage_plot <- function(data, x_var, plot_title) {
@@ -738,7 +743,7 @@ plot1 <- create_percentage_plot(rawDataForPlotGender, "Gender", "Percentage of L
 print(plot1)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-26.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Married
@@ -746,7 +751,7 @@ plot2 <- create_percentage_plot(rawDataForPlot, "Married", "Percentage of Loans 
 print(plot2)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-2.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-27.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Education
@@ -754,7 +759,7 @@ plot3 <- create_percentage_plot(rawDataForPlot, "Education", "Percentage of Loan
 print(plot3)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-3.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-28.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Self_Employed
@@ -762,7 +767,7 @@ plot4 <- create_percentage_plot(rawDataForPlot, "Self_Employed", "Percentage of 
 print(plot4)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-4.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-29.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Property Area
@@ -770,7 +775,7 @@ plot5 <- create_percentage_plot(rawDataForPlot, "Property_Area", "Percentage of 
 print(plot5)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-5.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-30.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Dependents
@@ -778,7 +783,7 @@ plot6 <- create_percentage_plot(rawDataForPlot, "Dependents", "Percentage of Loa
 print(plot6)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-6.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-31.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Credit History
@@ -786,7 +791,7 @@ plot7 <- create_percentage_plot(rawDataForPlot, "Credit_History", "Percentage of
 print(plot7)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-7.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-32.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Loan Amount Term
@@ -794,7 +799,7 @@ plot8 <- create_percentage_plot(rawDataForPlot, "Loan_Amount_Term", "Percentage 
 print(plot8)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-8.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-33.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Applicant Income (grouped)
@@ -802,7 +807,7 @@ plot9 <- create_percentage_plot(rawDataForPlot, "ApplicantIncome", "Percentage o
 print(plot9)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-9.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-34.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Coapplicant Income (grouped)
@@ -810,7 +815,7 @@ plot10 <- create_percentage_plot(rawDataForPlot, "CoapplicantIncome", "Percentag
 print(plot10)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-10.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-35.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Total Income (grouped)
@@ -818,7 +823,7 @@ plot11 <- create_percentage_plot(rawDataForPlot, "Total_Income", "Percentage of 
 print(plot11)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-11.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-36.png)<!-- -->
 
 ``` r
 # Plot percentage of loans granted by Income to Loan (grouped)
@@ -826,20 +831,12 @@ plot12 <- create_percentage_plot(rawDataForPlot, "Income_to_Loan", "Percentage o
 print(plot12)
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-12.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-37.png)<!-- -->
 
-# Check for Corillation
+# Preprocessing
 
+## Check for Corillation
 
-``` r
-library(tidyverse)
-library(caret)
-library(corrplot)
-```
-
-```
-## corrplot 0.92 loaded
-```
 
 ``` r
 # Select only the numerical columns
@@ -865,7 +862,7 @@ print(cor_matrix)
 corrplot(cor_matrix, method = "color", type = "upper", tl.cex = 0.8, number.cex = 0.7, addCoef.col = "black")
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 ``` r
@@ -1021,8 +1018,7 @@ rawData <- rawData[, !(names(rawData) %in% c("Total_Income"))]
 rawData <- rawData[, !(names(rawData) %in% c("Gender"))]
 ```
 
-
-# Model Training
+Splitting the data to a 80/20 split --\> we use CV on the 80% and validate with the 20%
 
 
 ``` r
@@ -1035,12 +1031,16 @@ X_train <- rawData[trainIndex,]
 X_test <- rawData[-trainIndex,]
 ```
 
+## Drop colums we dont want to train on
+
 
 ``` r
 # Ensure Loan_Status is a factor
 X_train$Loan_Status <- as.factor(X_train$Loan_Status)
 X_test$Loan_Status <- as.factor(X_test$Loan_Status)
 ```
+
+## Scaling and Encoding
 
 
 ``` r
@@ -1050,7 +1050,9 @@ X_train <- predict(preprocess, X_train)
 X_test <- predict(preprocess, X_test)
 ```
 
-### Train and Evaluate the Random Forest Model
+# Model Training
+
+## Custom ROC plot function
 
 
 ``` r
@@ -1064,12 +1066,10 @@ plot_roc_curve <- function(roc_obj, model_name) {
 }
 ```
 
+## Train and Evaluate the Random Forest Model
+
 
 ``` r
-# Load necessary libraries
-library(caret)
-library(pROC)
-
 # Define possible values for hyperparameters
 mtry_values <- c(2, 4, 6, 8, 16)
 ntree_values <- c(100, 200, 300, 500)
@@ -1118,360 +1118,6 @@ for (mtry in mtry_values) {
 }
 ```
 
-```
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
-## reset to within valid range
-```
 
 ``` r
 # Predict on the test set with the best model
@@ -1545,7 +1191,7 @@ rf_roc <- roc(X_test$Loan_Status, rf_probs)
 print(plot_roc_curve(rf_roc, "Random Forest"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -1569,7 +1215,7 @@ print(rf_metrics)
 ## Recall             5
 ```
 
-### Train and Evaluate the KNN Model
+## Train and Evaluate the KNN Model
 
 
 ``` r
@@ -1659,7 +1305,7 @@ knn_roc <- roc(X_test$Loan_Status, knn_probs)
 print(plot_roc_curve(knn_roc, "KNN"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -1678,7 +1324,7 @@ print(knn_metrics)
 ## Recall 0.8428571 0.8207447   0.45       0.9      0.6
 ```
 
-### Train and Evaluate the Decision Tree Model
+## Train and Evaluate the Decision Tree Model
 
 
 ``` r
@@ -1768,7 +1414,7 @@ dt_roc <- roc(X_test$Loan_Status, dt_probs)
 print(plot_roc_curve(dt_roc, "Decision Tree"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -1842,7 +1488,7 @@ ggplot(model_comparison_melted, aes(x = Model, y = value, color = variable, grou
 ## generated.
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 
 ``` r
@@ -1870,7 +1516,7 @@ ggplot(model_comparison_melted, aes(x = variable, y = value, color = Model, grou
   theme(legend.title = element_blank())
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 # Identify the best model
 
@@ -1894,4 +1540,4 @@ if (best_model_name == "Random Forest") {
 }
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
