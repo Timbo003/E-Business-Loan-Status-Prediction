@@ -72,14 +72,15 @@ ggplot(rawData, aes(x = Gender, fill = Gender)) +
   theme_minimal()
 
 # Plot 3: Average Loan Amount by Property Area
-avg_loan_amount <- rawData %>%
+# Count the number of loans by property area
+loan_count <- rawData %>%
   group_by(Property_Area) %>%
-  summarize(LoanAmount = mean(LoanAmount))
+  summarize(LoanCount = n())
 
-ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount, fill = Property_Area)) +
+ggplot(loan_count, aes(x = Property_Area, y = LoanCount, fill = Property_Area)) +
   geom_bar(stat = "identity") +
-  ggtitle("Average Loan Amount by Property Area") +
-  ylab("Average Loan Amount") +
+  ggtitle("Number of Loans by Property Area") +
+  ylab("Number of Loans") +
   theme_minimal() +
   scale_fill_manual(values = c("Urban" = "#FEA", "Rural" = "#FFB6A1", "Semiurban" = "#89CFF0"))
 
