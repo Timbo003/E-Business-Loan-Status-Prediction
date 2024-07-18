@@ -137,16 +137,9 @@ write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Predi
 # Plot 1: Distribution of Loan Status with customized colors
 ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
   geom_bar() +
-  scale_fill_manual(values = c("TRUE" = "#90EE90", "FALSE" = "#FFB6C1")) +
+  scale_fill_manual(values = c("Yes" = "#90EE90", "No" = "#FFB6C1")) +
   ggtitle("Distribution of Loan Status") +
   theme_minimal()
-```
-
-```
-## Warning: No shared levels found between `names(values)` of the manual scale and the
-## data's fill values.
-## No shared levels found between `names(values)` of the manual scale and the
-## data's fill values.
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
@@ -225,7 +218,7 @@ ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
 # Plot 2: Average Loan Amount  granted granted by Gender
 # Calculate the average loan amount by gender and remove missing values
 avg_loan_amount_gender <- rawData %>%
-  filter(Loan_Status == "TRUE" & !is.na(Gender) & Gender != "") %>%
+  filter(Loan_Status == "Yes" & !is.na(Gender) & Gender != "") %>%
   group_by(Gender) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
@@ -259,7 +252,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
 ``` r
 # Plot 4: Average Loan Amount granted by Property Area
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Property_Area) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -293,7 +286,7 @@ ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
 ``` r
 # Plot 6: Average Loan Amount granted by Marriage Status
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Married) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -327,7 +320,7 @@ ggplot(avg_loan_amount, aes(x = Education, y = LoanAmount)) +
 ``` r
 # Plot 8: Average Loan Amount granted by Education Status
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Education) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -361,7 +354,7 @@ ggplot(avg_loan_amount, aes(x = Self_Employed, y = LoanAmount)) +
 ``` r
 # Plot 10: Average Loan Amount granted by Self_Employed Status
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Self_Employed) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -395,7 +388,7 @@ ggplot(avg_loan_amount, aes(x = Dependents, y = LoanAmount)) +
 ``` r
 # Plot 12: Average Loan Amount granted by Number of Dependents
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Dependents) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -601,7 +594,7 @@ ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
 ``` r
 # Plot 22: Average Loan Amount granted by Credit_History
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Credit_History) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
@@ -635,7 +628,7 @@ ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
 ``` r
 # Plot 24: Average Loan Amount granted by Loan_Amount_Term
 avg_loan_amount <- rawData %>%
-  filter(Loan_Status == "TRUE") %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Loan_Amount_Term) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
