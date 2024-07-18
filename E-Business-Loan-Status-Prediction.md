@@ -124,12 +124,6 @@ print(null_counts)
 ##                 0                 0
 ```
 
-
-``` r
-# Save the data as a csv #TODO
-write.csv(rawData, "C:/Users/timst/Documents/GitHub/E-Business-Loan-Status-Prediction/rawData.csv")
-```
-
 # Initial Data sighting
 
 
@@ -142,7 +136,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Loan_Status)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 # Plot 2: Distribution of Gender with customized RGB colors
@@ -153,7 +147,7 @@ ggplot(rawData, aes(x = Gender, fill = Gender)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-2.png)<!-- -->
 
 ``` r
 # Plot 3: Average Loan Amount by Property Area
@@ -168,7 +162,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-3.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-3.png)<!-- -->
 
 ``` r
 # Plot 4: Distribution of Loan Status by Education
@@ -178,7 +172,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Education)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-4.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-4.png)<!-- -->
 
 ``` r
 # Plot 5: Distribution of Loan Status by Self Employed status
@@ -188,7 +182,7 @@ ggplot(rawData, aes(x = Loan_Status, fill = Self_Employed)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-5.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-5.png)<!-- -->
 
 
 # EDA
@@ -212,7 +206,7 @@ ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 # Plot 2: Average Loan Amount  granted granted by Gender
@@ -231,7 +225,7 @@ ggplot(avg_loan_amount_gender, aes(x = Gender, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-2.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
 # Plot 3: Average Loan Amount requested by Property Area
@@ -247,7 +241,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-3.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-3.png)<!-- -->
 
 ``` r
 # Plot 4: Average Loan Amount granted by Property Area
@@ -265,7 +259,7 @@ ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-4.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-4.png)<!-- -->
 
 ``` r
 # Plot 5: Average Loan Amount requested by Marriage Status
@@ -281,7 +275,7 @@ ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-5.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-5.png)<!-- -->
 
 ``` r
 # Plot 6: Average Loan Amount granted by Marriage Status
@@ -299,7 +293,7 @@ ggplot(avg_loan_amount, aes(x = Married, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-6.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-6.png)<!-- -->
 
 ``` r
 # Plot 7: Average Loan Amount requested by Education Status
@@ -315,7 +309,7 @@ ggplot(avg_loan_amount, aes(x = Education, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-7.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-7.png)<!-- -->
 
 ``` r
 # Plot 8: Average Loan Amount granted by Education Status
@@ -333,7 +327,7 @@ ggplot(avg_loan_amount, aes(x = Education, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-8.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-8.png)<!-- -->
 
 ``` r
 # Plot 9: Average Loan Amount requested by Self_Employed Status
@@ -349,7 +343,7 @@ ggplot(avg_loan_amount, aes(x = Self_Employed, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-9.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-9.png)<!-- -->
 
 ``` r
 # Plot 10: Average Loan Amount granted by Self_Employed Status
@@ -367,7 +361,7 @@ ggplot(avg_loan_amount, aes(x = Self_Employed, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-10.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-10.png)<!-- -->
 
 ``` r
 # Plot 11: Average Loan Amount requested by Number of Dependents
@@ -383,7 +377,7 @@ ggplot(avg_loan_amount, aes(x = Dependents, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-11.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-11.png)<!-- -->
 
 ``` r
 # Plot 12: Average Loan Amount granted by Number of Dependents
@@ -401,7 +395,7 @@ ggplot(avg_loan_amount, aes(x = Dependents, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-12.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-12.png)<!-- -->
 
 ``` r
 # Plot 13: Average loan amount requested by Applicant Income
@@ -424,12 +418,12 @@ ggplot(avg_loan_requested, aes(x = ApplicantIncome, y = LoanAmount)) +
 ## `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-13.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-13.png)<!-- -->
 
 ``` r
 # Plot 14: Average loan amount granted by Applicant Income (Loan_Status == TRUE)
 avg_loan_granted <- rawData %>%
-  filter(Loan_Status == TRUE) %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(ApplicantIncome) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
@@ -444,7 +438,11 @@ ggplot(avg_loan_granted, aes(x = ApplicantIncome, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-14.png)<!-- -->
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-14.png)<!-- -->
 
 ``` r
 # Plot 15: Average loan amount requested by Coapplicant Income
@@ -467,12 +465,12 @@ ggplot(avg_loan_requested, aes(x = CoapplicantIncome, y = LoanAmount)) +
 ## `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-15.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-15.png)<!-- -->
 
 ``` r
 # Plot 16: Average loan amount granted by Coapplicant Income (Loan_Status == TRUE)
 avg_loan_granted <- rawData %>%
-  filter(Loan_Status == TRUE) %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(CoapplicantIncome) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
@@ -487,7 +485,11 @@ ggplot(avg_loan_granted, aes(x = CoapplicantIncome, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-16.png)<!-- -->
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-16.png)<!-- -->
 
 ``` r
 # Plot 17: Average loan amount requested by Total_Income
@@ -510,12 +512,12 @@ ggplot(avg_loan_requested, aes(x = Total_Income, y = LoanAmount)) +
 ## `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-17.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-17.png)<!-- -->
 
 ``` r
 # Plot 18: Average loan amount granted by Total_Income (Loan_Status == TRUE)
 avg_loan_granted <- rawData %>%
-  filter(Loan_Status == TRUE) %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Total_Income) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
@@ -530,7 +532,11 @@ ggplot(avg_loan_granted, aes(x = Total_Income, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-18.png)<!-- -->
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-18.png)<!-- -->
 
 ``` r
 # Plot 19: Average loan amount requested by Income_to_Loan
@@ -553,12 +559,12 @@ ggplot(avg_loan_requested, aes(x = Income_to_Loan, y = LoanAmount)) +
 ## `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-19.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-19.png)<!-- -->
 
 ``` r
 # Plot 20: Average loan amount granted by Income_to_Loan (Loan_Status == TRUE)
 avg_loan_granted <- rawData %>%
-  filter(Loan_Status == TRUE) %>%
+  filter(Loan_Status == "Yes") %>%
   group_by(Income_to_Loan) %>%
   summarize(LoanAmount = mean(LoanAmount, na.rm = TRUE))
 
@@ -573,7 +579,11 @@ ggplot(avg_loan_granted, aes(x = Income_to_Loan, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-20.png)<!-- -->
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-20.png)<!-- -->
 
 ``` r
 # Plot 21: Average Loan Amount requested by Credit_History
@@ -589,7 +599,7 @@ ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-21.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-21.png)<!-- -->
 
 ``` r
 # Plot 22: Average Loan Amount granted by Credit_History
@@ -607,7 +617,7 @@ ggplot(avg_loan_amount, aes(x = Credit_History, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-22.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-22.png)<!-- -->
 
 ``` r
 # Plot 23: Average Loan Amount requested by Loan_Amount_Term
@@ -623,7 +633,7 @@ ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-23.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-23.png)<!-- -->
 
 ``` r
 # Plot 24: Average Loan Amount granted by Loan_Amount_Term
@@ -641,7 +651,7 @@ ggplot(avg_loan_amount, aes(x = Loan_Amount_Term, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-24.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-24.png)<!-- -->
 
 ``` r
 # Plot 25: Average Loan Amount requested by Loan_Status
@@ -657,14 +667,367 @@ ggplot(avg_loan_amount, aes(x = Loan_Status, y = LoanAmount)) +
   theme_minimal()
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-25.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-5-25.png)<!-- -->
+
+
+``` r
+# Function to create percentage plots for categorical variables
+create_percentage_plot <- function(data, x_var, plot_title) {
+  # Calculate the percentage of loans granted
+  percentage_data <- data %>%
+    group_by(.data[[x_var]]) %>%
+    summarize(Requested = n(),
+              Granted = sum(Loan_Status == "Yes")) %>%
+    mutate(Percentage = (Granted / Requested) * 100)
+  
+  ggplot(percentage_data, aes_string(x = x_var, y = "Percentage")) +
+    geom_bar(stat = "identity", fill = "blue") +
+    geom_text(aes(label = paste0(round(Percentage, 2), "%")), vjust = -0.5) +
+    ggtitle(plot_title) +
+    ylab("Percentage of Loans Granted") +
+    theme_minimal()
+}
+
+# Function to group continuous variables into sensible ranges
+group_continuous_variable <- function(data, var, breaks, labels) {
+  data %>%
+    mutate(!!var := cut(.data[[var]], breaks = breaks, labels = labels, include.lowest = TRUE))
+}
+
+rawDataForPlot <- data.table::copy(rawData)
+
+# Group ApplicantIncome
+rawDataForPlot <- group_continuous_variable(rawDataForPlot, "ApplicantIncome", 
+                                     breaks = c(0, 2500, 5000, 7500, 10000, Inf), 
+                                     labels = c("0-2500", "2500-5000", "5000-7500", "7500-10000", ">10000"))
+
+# Group CoapplicantIncome
+rawDataForPlot <- group_continuous_variable(rawDataForPlot, "CoapplicantIncome", 
+                                     breaks = c(0, 1000, 2000, 3000, 4000, Inf), 
+                                     labels = c("0-1000", "1000-2000", "2000-3000", "3000-4000", ">4000"))
+
+# Group Total_Income
+rawDataForPlot <- group_continuous_variable(rawDataForPlot, "Total_Income", 
+                                     breaks = c(0, 3000, 6000, 9000, 12000, Inf), 
+                                     labels = c("0-3000", "3000-6000", "6000-9000", "9000-12000", ">12000"))
+
+# Group Income_to_Loan
+rawDataForPlot <- group_continuous_variable(rawDataForPlot, "Income_to_Loan", 
+                                     breaks = c(0, 20, 40, 60, 80, 100, Inf), 
+                                     labels = c("0-20", "20-40", "40-60", "60-80", "80-100", ">100"))
+
+
+# Plot percentage of loans granted by Gender
+rawDataForPlotGender <- rawDataForPlot %>%
+  filter(!is.na(Gender) & Gender != "")
+
+#Percentage of Loans Granted by Gender
+plot1 <- create_percentage_plot(rawDataForPlotGender, "Gender", "Percentage of Loans Granted by Gender")
+```
+
+```
+## Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+## ℹ Please use tidy evaluation idioms with `aes()`.
+## ℹ See also `vignette("ggplot2-in-packages")` for more information.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+``` r
+print(plot1)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Married
+plot2 <- create_percentage_plot(rawDataForPlot, "Married", "Percentage of Loans Granted by Marriage Status")
+print(plot2)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-2.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Education
+plot3 <- create_percentage_plot(rawDataForPlot, "Education", "Percentage of Loans Granted by Education Status")
+print(plot3)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-3.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Self_Employed
+plot4 <- create_percentage_plot(rawDataForPlot, "Self_Employed", "Percentage of Loans Granted by Self_Employed Status")
+print(plot4)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-4.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Property Area
+plot5 <- create_percentage_plot(rawDataForPlot, "Property_Area", "Percentage of Loans Granted by Property Area")
+print(plot5)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-5.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Dependents
+plot6 <- create_percentage_plot(rawDataForPlot, "Dependents", "Percentage of Loans Granted by Number of Dependents")
+print(plot6)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-6.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Credit History
+plot7 <- create_percentage_plot(rawDataForPlot, "Credit_History", "Percentage of Loans Granted by Credit History")
+print(plot7)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-7.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Loan Amount Term
+plot8 <- create_percentage_plot(rawDataForPlot, "Loan_Amount_Term", "Percentage of Loans Granted by Loan Amount Term")
+print(plot8)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-8.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Applicant Income (grouped)
+plot9 <- create_percentage_plot(rawDataForPlot, "ApplicantIncome", "Percentage of Loans Granted by Applicant Income")
+print(plot9)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-9.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Coapplicant Income (grouped)
+plot10 <- create_percentage_plot(rawDataForPlot, "CoapplicantIncome", "Percentage of Loans Granted by Coapplicant Income")
+print(plot10)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-10.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Total Income (grouped)
+plot11 <- create_percentage_plot(rawDataForPlot, "Total_Income", "Percentage of Loans Granted by Total Income")
+print(plot11)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-11.png)<!-- -->
+
+``` r
+# Plot percentage of loans granted by Income to Loan (grouped)
+plot12 <- create_percentage_plot(rawDataForPlot, "Income_to_Loan", "Percentage of Loans Granted by Income to Loan")
+print(plot12)
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-6-12.png)<!-- -->
+
+# Check for Corillation
+
+
+``` r
+library(tidyverse)
+library(caret)
+library(corrplot)
+```
+
+```
+## corrplot 0.92 loaded
+```
+
+``` r
+# Select only the numerical columns
+numerical_vars <- rawData %>% select(ApplicantIncome, CoapplicantIncome, LoanAmount, Income_to_Loan)
+
+# Compute the correlation matrix
+cor_matrix <- cor(numerical_vars, use = "complete.obs")
+
+# Print the correlation matrix
+print(cor_matrix)
+```
+
+```
+##                   ApplicantIncome CoapplicantIncome LoanAmount Income_to_Loan
+## ApplicantIncome         1.0000000        -0.2552392  0.2567091      0.1203217
+## CoapplicantIncome      -0.2552392         1.0000000  0.1248243      0.5849900
+## LoanAmount              0.2567091         0.1248243  1.0000000     -0.4287219
+## Income_to_Loan          0.1203217         0.5849900 -0.4287219      1.0000000
+```
+
+``` r
+# Visualize the correlation matrix using a heatmap
+corrplot(cor_matrix, method = "color", type = "upper", tl.cex = 0.8, number.cex = 0.7, addCoef.col = "black")
+```
+
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+
+``` r
+# Select only the categorical columns
+categorical_vars <- rawData %>% select(Gender, Married, Dependents, Education, Self_Employed, Property_Area, Loan_Status)
+
+# Perform chi-square test for each pair of categorical variables
+cat_var_names <- names(categorical_vars)
+chi_square_results <- matrix(nrow = length(cat_var_names), ncol = length(cat_var_names), dimnames = list(cat_var_names, cat_var_names))
+
+for (i in 1:length(cat_var_names)) {
+  for (j in 1:length(cat_var_names)) {
+    if (i != j) {
+      chi_square_results[i, j] <- chisq.test(categorical_vars[[i]], categorical_vars[[j]])$p.value
+    } else {
+      chi_square_results[i, j] <- NA
+    }
+  }
+}
+```
+
+```
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+## Warning in chisq.test(categorical_vars[[i]], categorical_vars[[j]]):
+## Chi-Quadrat-Approximation kann inkorrekt sein
+```
+
+``` r
+# Print the chi-square test results
+print(chi_square_results)
+```
+
+```
+##                     Gender      Married   Dependents  Education Self_Employed
+## Gender                  NA 1.514891e-09 1.222131e-02 0.06212498     0.7844717
+## Married       1.514891e-09           NA 2.512381e-11 0.53279748     1.0000000
+## Dependents    1.222131e-02 2.512381e-11           NA 0.34973385     0.3706841
+## Education     6.212498e-02 5.327975e-01 3.497338e-01         NA     0.6594358
+## Self_Employed 7.844717e-01 1.000000e+00 3.706841e-01 0.65943585            NA
+## Property_Area 7.446191e-02 7.560193e-01 4.204311e-01 0.19789072     0.5840935
+## Loan_Status   2.228267e-02 8.181087e-02 5.541186e-01 0.36275297     0.4231037
+##               Property_Area Loan_Status
+## Gender          0.074461908 0.022282673
+## Married         0.756019284 0.081810867
+## Dependents      0.420431081 0.554118583
+## Education       0.197890725 0.362752973
+## Self_Employed   0.584093502 0.423103734
+## Property_Area            NA 0.006092352
+## Loan_Status     0.006092352          NA
+```
+
+``` r
+# Convert to a dataframe for easier viewing
+chi_square_df <- as.data.frame(as.table(chi_square_results))
+names(chi_square_df) <- c("Variable1", "Variable2", "P_Value")
+chi_square_df <- chi_square_df %>% filter(!is.na(P_Value))
+
+# Print the chi-square test dataframe
+print(chi_square_df)
+```
+
+```
+##        Variable1     Variable2      P_Value
+## 1        Married        Gender 1.514891e-09
+## 2     Dependents        Gender 1.222131e-02
+## 3      Education        Gender 6.212498e-02
+## 4  Self_Employed        Gender 7.844717e-01
+## 5  Property_Area        Gender 7.446191e-02
+## 6    Loan_Status        Gender 2.228267e-02
+## 7         Gender       Married 1.514891e-09
+## 8     Dependents       Married 2.512381e-11
+## 9      Education       Married 5.327975e-01
+## 10 Self_Employed       Married 1.000000e+00
+## 11 Property_Area       Married 7.560193e-01
+## 12   Loan_Status       Married 8.181087e-02
+## 13        Gender    Dependents 1.222131e-02
+## 14       Married    Dependents 2.512381e-11
+## 15     Education    Dependents 3.497338e-01
+## 16 Self_Employed    Dependents 3.706841e-01
+## 17 Property_Area    Dependents 4.204311e-01
+## 18   Loan_Status    Dependents 5.541186e-01
+## 19        Gender     Education 6.212498e-02
+## 20       Married     Education 5.327975e-01
+## 21    Dependents     Education 3.497338e-01
+## 22 Self_Employed     Education 6.594358e-01
+## 23 Property_Area     Education 1.978907e-01
+## 24   Loan_Status     Education 3.627530e-01
+## 25        Gender Self_Employed 7.844717e-01
+## 26       Married Self_Employed 1.000000e+00
+## 27    Dependents Self_Employed 3.706841e-01
+## 28     Education Self_Employed 6.594358e-01
+## 29 Property_Area Self_Employed 5.840935e-01
+## 30   Loan_Status Self_Employed 4.231037e-01
+## 31        Gender Property_Area 7.446191e-02
+## 32       Married Property_Area 7.560193e-01
+## 33    Dependents Property_Area 4.204311e-01
+## 34     Education Property_Area 1.978907e-01
+## 35 Self_Employed Property_Area 5.840935e-01
+## 36   Loan_Status Property_Area 6.092352e-03
+## 37        Gender   Loan_Status 2.228267e-02
+## 38       Married   Loan_Status 8.181087e-02
+## 39    Dependents   Loan_Status 5.541186e-01
+## 40     Education   Loan_Status 3.627530e-01
+## 41 Self_Employed   Loan_Status 4.231037e-01
+## 42 Property_Area   Loan_Status 6.092352e-03
+```
+
+
+``` r
+# Drop a single column by name
+rawData <- rawData[, !(names(rawData) %in% c("Total_Income"))]
+rawData <- rawData[, !(names(rawData) %in% c("Gender"))]
+```
+
 
 # Model Training
 
 
 ``` r
 # Split Data into Training and Testing Sets
-set.seed(123)
+set.seed(789)
 trainIndex <- createDataPartition(rawData$Loan_Status, p = .8, 
                                   list = FALSE, 
                                   times = 1)
@@ -753,7 +1116,364 @@ for (mtry in mtry_values) {
     }
   }
 }
+```
 
+```
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+```
+
+``` r
 # Predict on the test set with the best model
 rf_predictions <- predict(best_model, X_test)
 conf_matrix <- confusionMatrix(rf_predictions, X_test$Loan_Status)
@@ -774,26 +1494,26 @@ print(conf_matrix)
 ## 
 ##           Reference
 ## Prediction No Yes
-##        No   8   1
-##        Yes 12  46
+##        No  10   1
+##        Yes 10  46
 ##                                           
-##                Accuracy : 0.806           
-##                  95% CI : (0.6911, 0.8924)
+##                Accuracy : 0.8358          
+##                  95% CI : (0.7252, 0.9151)
 ##     No Information Rate : 0.7015          
-##     P-Value [Acc > NIR] : 0.037459        
+##     P-Value [Acc > NIR] : 0.008892        
 ##                                           
-##                   Kappa : 0.4498          
+##                   Kappa : 0.5498          
 ##                                           
-##  Mcnemar's Test P-Value : 0.005546        
+##  Mcnemar's Test P-Value : 0.015861        
 ##                                           
-##             Sensitivity : 0.4000          
+##             Sensitivity : 0.5000          
 ##             Specificity : 0.9787          
-##          Pos Pred Value : 0.8889          
-##          Neg Pred Value : 0.7931          
+##          Pos Pred Value : 0.9091          
+##          Neg Pred Value : 0.8214          
 ##              Prevalence : 0.2985          
-##          Detection Rate : 0.1194          
-##    Detection Prevalence : 0.1343          
-##       Balanced Accuracy : 0.6894          
+##          Detection Rate : 0.1493          
+##    Detection Prevalence : 0.1642          
+##       Balanced Accuracy : 0.7394          
 ##                                           
 ##        'Positive' Class : No              
 ## 
@@ -825,7 +1545,7 @@ rf_roc <- roc(X_test$Loan_Status, rf_probs)
 print(plot_roc_curve(rf_roc, "Random Forest"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -844,7 +1564,7 @@ print(rf_metrics)
 
 ```
 ##         Accuracy       AUC Recall Precision  F1_Score best_mtry best_ntree
-## Recall 0.8347884 0.6941489    0.4 0.8888889 0.5517241         2        100
+## Recall 0.8351852 0.8367021    0.5 0.9090909 0.6451613         2        100
 ##        best_nodesize
 ## Recall             5
 ```
@@ -888,28 +1608,28 @@ print(knn_conf_matrix)
 ## 
 ##           Reference
 ## Prediction No Yes
-##        No   7   1
-##        Yes 13  46
-##                                           
-##                Accuracy : 0.791           
-##                  95% CI : (0.6743, 0.8808)
-##     No Information Rate : 0.7015          
-##     P-Value [Acc > NIR] : 0.067604        
-##                                           
-##                   Kappa : 0.3972          
-##                                           
-##  Mcnemar's Test P-Value : 0.003283        
-##                                           
-##             Sensitivity : 0.3500          
-##             Specificity : 0.9787          
-##          Pos Pred Value : 0.8750          
-##          Neg Pred Value : 0.7797          
-##              Prevalence : 0.2985          
-##          Detection Rate : 0.1045          
-##    Detection Prevalence : 0.1194          
-##       Balanced Accuracy : 0.6644          
-##                                           
-##        'Positive' Class : No              
+##        No   9   1
+##        Yes 11  46
+##                                          
+##                Accuracy : 0.8209         
+##                  95% CI : (0.708, 0.9039)
+##     No Information Rate : 0.7015         
+##     P-Value [Acc > NIR] : 0.019093       
+##                                          
+##                   Kappa : 0.5006         
+##                                          
+##  Mcnemar's Test P-Value : 0.009375       
+##                                          
+##             Sensitivity : 0.4500         
+##             Specificity : 0.9787         
+##          Pos Pred Value : 0.9000         
+##          Neg Pred Value : 0.8070         
+##              Prevalence : 0.2985         
+##          Detection Rate : 0.1343         
+##    Detection Prevalence : 0.1493         
+##       Balanced Accuracy : 0.7144         
+##                                          
+##        'Positive' Class : No             
 ## 
 ```
 
@@ -939,7 +1659,7 @@ knn_roc <- roc(X_test$Loan_Status, knn_probs)
 print(plot_roc_curve(knn_roc, "KNN"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -955,7 +1675,7 @@ print(knn_metrics)
 
 ```
 ##         Accuracy       AUC Recall Precision F1_Score
-## Recall 0.8530423 0.6803191   0.35     0.875      0.5
+## Recall 0.8428571 0.8207447   0.45       0.9      0.6
 ```
 
 ### Train and Evaluate the Decision Tree Model
@@ -997,28 +1717,28 @@ print(dt_conf_matrix)
 ## 
 ##           Reference
 ## Prediction No Yes
-##        No   7   1
-##        Yes 13  46
-##                                           
-##                Accuracy : 0.791           
-##                  95% CI : (0.6743, 0.8808)
-##     No Information Rate : 0.7015          
-##     P-Value [Acc > NIR] : 0.067604        
-##                                           
-##                   Kappa : 0.3972          
-##                                           
-##  Mcnemar's Test P-Value : 0.003283        
-##                                           
-##             Sensitivity : 0.3500          
-##             Specificity : 0.9787          
-##          Pos Pred Value : 0.8750          
-##          Neg Pred Value : 0.7797          
-##              Prevalence : 0.2985          
-##          Detection Rate : 0.1045          
-##    Detection Prevalence : 0.1194          
-##       Balanced Accuracy : 0.6644          
-##                                           
-##        'Positive' Class : No              
+##        No   9   1
+##        Yes 11  46
+##                                          
+##                Accuracy : 0.8209         
+##                  95% CI : (0.708, 0.9039)
+##     No Information Rate : 0.7015         
+##     P-Value [Acc > NIR] : 0.019093       
+##                                          
+##                   Kappa : 0.5006         
+##                                          
+##  Mcnemar's Test P-Value : 0.009375       
+##                                          
+##             Sensitivity : 0.4500         
+##             Specificity : 0.9787         
+##          Pos Pred Value : 0.9000         
+##          Neg Pred Value : 0.8070         
+##              Prevalence : 0.2985         
+##          Detection Rate : 0.1343         
+##    Detection Prevalence : 0.1493         
+##       Balanced Accuracy : 0.7144         
+##                                          
+##        'Positive' Class : No             
 ## 
 ```
 
@@ -1048,7 +1768,7 @@ dt_roc <- roc(X_test$Loan_Status, dt_probs)
 print(plot_roc_curve(dt_roc, "Decision Tree"))
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # Calculate and display accuracy, AUC, recall, precision, and F1 score
@@ -1071,8 +1791,8 @@ print(dt_metrics)
 ```
 
 ```
-##        Accuracy       AUC Recall Precision F1_Score
-## Recall     0.85 0.6643617   0.35     0.875      0.5
+##         Accuracy       AUC Recall Precision F1_Score
+## Recall 0.8420361 0.7143617   0.45       0.9      0.6
 ```
 
 # Compare Models
@@ -1092,9 +1812,9 @@ model_comparison
 
 ```
 ##           Model  Accuracy       AUC Precision
-## 1 Random Forest 0.8347884 0.6941489 0.8888889
-## 2           KNN 0.8530423 0.6803191 0.8750000
-## 3 Decision Tree 0.8500000 0.6643617 0.8750000
+## 1 Random Forest 0.8351852 0.8367021 0.9090909
+## 2           KNN 0.8428571 0.8207447 0.9000000
+## 3 Decision Tree 0.8420361 0.7143617 0.9000000
 ```
 
 
@@ -1122,7 +1842,7 @@ ggplot(model_comparison_melted, aes(x = Model, y = value, color = variable, grou
 ## generated.
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 
 ``` r
@@ -1150,7 +1870,7 @@ ggplot(model_comparison_melted, aes(x = variable, y = value, color = Model, grou
   theme(legend.title = element_blank())
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 # Identify the best model
 
@@ -1174,4 +1894,4 @@ if (best_model_name == "Random Forest") {
 }
 ```
 
-![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-21-1.png)<!-- -->

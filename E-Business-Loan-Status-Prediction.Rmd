@@ -501,7 +501,11 @@ rawDataForPlot <- group_continuous_variable(rawDataForPlot, "Income_to_Loan",
 
 
 # Plot percentage of loans granted by Gender
-plot1 <- create_percentage_plot(rawDataForPlot, "Gender", "Percentage of Loans Granted by Gender")
+rawDataForPlotGender <- rawDataForPlot %>%
+  filter(!is.na(Gender) & Gender != "")
+
+#Percentage of Loans Granted by Gender
+plot1 <- create_percentage_plot(rawDataForPlotGender, "Gender", "Percentage of Loans Granted by Gender")
 print(plot1)
 
 # Plot percentage of loans granted by Married
@@ -549,11 +553,68 @@ plot12 <- create_percentage_plot(rawDataForPlot, "Income_to_Loan", "Percentage o
 print(plot12)
 ```
 
+# Check for Corillation
+
+```{r}
+library(tidyverse)
+library(caret)
+library(corrplot)
+# Select only the numerical columns
+numerical_vars <- rawData %>% select(ApplicantIncome, CoapplicantIncome, LoanAmount, Income_to_Loan)
+
+# Compute the correlation matrix
+cor_matrix <- cor(numerical_vars, use = "complete.obs")
+
+# Print the correlation matrix
+print(cor_matrix)
+
+# Visualize the correlation matrix using a heatmap
+corrplot(cor_matrix, method = "color", type = "upper", tl.cex = 0.8, number.cex = 0.7, addCoef.col = "black")
+```
+
+```{r}
+# Select only the categorical columns
+categorical_vars <- rawData %>% select(Gender, Married, Dependents, Education, Self_Employed, Property_Area, Loan_Status)
+
+# Perform chi-square test for each pair of categorical variables
+cat_var_names <- names(categorical_vars)
+chi_square_results <- matrix(nrow = length(cat_var_names), ncol = length(cat_var_names), dimnames = list(cat_var_names, cat_var_names))
+
+for (i in 1:length(cat_var_names)) {
+  for (j in 1:length(cat_var_names)) {
+    if (i != j) {
+      chi_square_results[i, j] <- chisq.test(categorical_vars[[i]], categorical_vars[[j]])$p.value
+    } else {
+      chi_square_results[i, j] <- NA
+    }
+  }
+}
+
+# Print the chi-square test results
+print(chi_square_results)
+
+# Convert to a dataframe for easier viewing
+chi_square_df <- as.data.frame(as.table(chi_square_results))
+names(chi_square_df) <- c("Variable1", "Variable2", "P_Value")
+chi_square_df <- chi_square_df %>% filter(!is.na(P_Value))
+
+# Print the chi-square test dataframe
+print(chi_square_df)
+```
+
+```{r}
+# Drop a single column by name
+rawData <- rawData[, !(names(rawData) %in% c("Total_Income"))]
+rawData <- rawData[, !(names(rawData) %in% c("Gender"))]
+
+```
+
+
 # Model Training
 
 ```{r}
 # Split Data into Training and Testing Sets
-set.seed(123)
+set.seed(789)
 trainIndex <- createDataPartition(rawData$Loan_Status, p = .8, 
                                   list = FALSE, 
                                   times = 1)
