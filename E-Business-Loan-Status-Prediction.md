@@ -109,7 +109,7 @@ rawData <- rawData %>%
 ``` r
 rawData <- rawData %>%
   mutate(Total_Income = ApplicantIncome + CoapplicantIncome,
-         Income_to_Loan = Total_Income / LoanAmount)
+         Income_to_Loan = Total_Income / (LoanAmount*1000))
 
 # Drop all missing values just for testing TODO
 rawData <- drop_na(rawData)
@@ -161,11 +161,12 @@ avg_loan_amount <- rawData %>%
   group_by(Property_Area) %>%
   summarize(LoanAmount = mean(LoanAmount))
 
-ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount)) +
+ggplot(avg_loan_amount, aes(x = Property_Area, y = LoanAmount, fill = Property_Area)) +
   geom_bar(stat = "identity") +
   ggtitle("Average Loan Amount by Property Area") +
   ylab("Average Loan Amount") +
-  theme_minimal()
+  theme_minimal() +
+  scale_fill_manual(values = c("Urban" = "#FEA", "Rural" = "#FFB6A1", "Semiurban" = "#89CFF0"))
 ```
 
 ![](E-Business-Loan-Status-Prediction_files/figure-html/unnamed-chunk-4-3.png)<!-- -->
@@ -718,8 +719,8 @@ rawDataForPlot <- group_continuous_variable(rawDataForPlot, "Total_Income",
 
 # Group Income_to_Loan
 rawDataForPlot <- group_continuous_variable(rawDataForPlot, "Income_to_Loan", 
-                                     breaks = c(0, 20, 40, 60, 80, 100, Inf), 
-                                     labels = c("0-20", "20-40", "40-60", "60-80", "80-100", ">100"))
+                                     breaks = c(0.0, 0.20, 0.40, 0.60, 0.80, 0.100, Inf), 
+                                     labels = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-.08", "0.8-0.1", ">1"))
 
 
 # Plot percentage of loans granted by Gender
@@ -1118,6 +1119,360 @@ for (mtry in mtry_values) {
 }
 ```
 
+```
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+## Warning in randomForest.default(x, y, mtry = param$mtry, ...): invalid mtry:
+## reset to within valid range
+```
 
 ``` r
 # Predict on the test set with the best model
